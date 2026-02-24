@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Chewy&family=Dancing+Script:wght@400..700&family=Knewave&family=Luckiest+Guy&family=Orbitron:wght@400..900&display=swap');
+
+.hero h2{
+    font-family: "Luckiest Guy", cursive;
+    font-size:50px;
+    font-weight:700;
+    letter-spacing:1px;
+    line-height:58px;
+}
