@@ -2,13 +2,15 @@ import React from 'react'
 import { useState } from 'react'
 import Swal from 'sweetalert2'
 import axios from "axios"
+import { useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
 export const Login = () => {
  const [showpassword , setShowpassword] = useState(false);
- const [loading, setLoading] = useState(false)
- const [email, setEmail]= useState("")
- const [password, setPassword]= useState("")
+ const [loading, setLoading] = useState(false);
+ const [email, setEmail]= useState("");
+ const [password, setPassword]= useState("");
+ const navigate = useNavigate();
 
  const login =async(e)=> {
     e.preventDefault();
@@ -28,11 +30,18 @@ export const Login = () => {
             Swal.fire({
               icon:"success",
               title:"Successful",
-              text:"You've logged-in successful"
+              text:"You've logged-in successful please wait . . .",
+              timer:2000
             })
+
+           setTimeout(()=> {
+            navigate("/admin/dashboard");
+           }, 2000)
+
+
         }catch(error){
             let err = "Error connecting to the server!";
-
+            
             if(error.response?.data?.error){
                   Swal.fire({
                      icon:"warning",

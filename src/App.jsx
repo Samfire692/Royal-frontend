@@ -3,6 +3,7 @@ import { Navbar } from './users/Navbar'
 import { Router } from './users/Router'
 import { Footer } from './users/Footer'
 import { Outlet } from 'react-router-dom';
+import { AdminRouter } from './admin/AdminRouter';
 
 function App() {
  const [themestate , setThemestate] = useState(localStorage.getItem('themes') || ('white'));
@@ -25,6 +26,7 @@ function App() {
       themestate === 'royalty' ? "bg-purple-200 text-purple-950 " : "bg-white" 
     }`}>
       <Router/>
+      <AdminRouter/>
       {/* <Footer/> */}
     </div>
   )

@@ -8,3 +8,16 @@
     letter-spacing:1px;
     line-height:58px;
 }
+
+.adminNav{
+    animation:slide 0.1s ease-in-out;
+}
+
+@keyframes slide {
+    from{
+        transform: translateX(-100px);
+    }
+    to{
+        transform: translateX(0px);
+    }
+}
