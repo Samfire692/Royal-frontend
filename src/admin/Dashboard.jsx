@@ -19,7 +19,7 @@ export const Dashboard = () => {
   useEffect (()=> {
     const getStats= async ()=> {
       try{
-        const response = await API.get("/authrouter/stats")
+        const response = await API.get("authrouter/stats")
         setTotalstudents(response.data.totalStudents)
         setTotalteachers(response.data.totalTeachers)
         setTotaladmin(response.data.totalAdmin)
