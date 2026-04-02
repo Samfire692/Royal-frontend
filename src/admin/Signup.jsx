@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import API from '../api'
 
 export const Signup = () => {
   const [showpassword , setShowpassword] = useState(false);
@@ -29,7 +30,7 @@ export const Signup = () => {
   }
 
     try{
-       const response = await axios.post("http://127.0.0.1:4000/api/authrouter/signup", {fullname, email, password})
+       const response = await API.post("authrouter/signup", {fullname, email, password})
 
         Swal.fire({
           icon: 'success',
