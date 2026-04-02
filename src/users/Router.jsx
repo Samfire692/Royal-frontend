@@ -10,6 +10,7 @@ import {Contacts} from './Contacts'
 import {Role} from './Role'
 import { Navbar } from './Navbar'
 import { Login } from '../admin/Login'
+import { StuSignUp } from '../Students/StuSignUp'
 
 export const Router = () => {
   return (
@@ -30,6 +31,7 @@ export const Router = () => {
       {/* admin */}
       {/* <Route path='/admin/' element={<Login/>}></Route> */}
       <Route path='/admin/' element={<Login/>}></Route>
+      <Route path='/student/' element={<StuSignUp/>}></Route>
     </Routes>
   )
 }

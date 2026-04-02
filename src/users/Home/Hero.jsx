@@ -12,10 +12,10 @@ export const Hero = () => {
         <section id='hero'>
          <div className='hero lg:h-[80vh] lg:flex px-3 justify-evenly place-items-center pt-5 lg:pt-0 text-center lg:text-start'>
            <div>
-            <h2 className='lg:w-[46vw] md:w-[80vw]'>Royal Ambassadors Schools</h2>
+            <h2 className='lg:w-[46vw] md:w-[80vw] text-blue-600'>Royal Ambassadors Schools</h2>
             <p className='text-lg'>Motto: <span>Academic, Excellence, Good Morals</span></p>
 
-            <div className='flex mt-4 gap-4 mb-4 justify-center lg:justify-start'>
+            <div className='flex mt-4 gap-4 mb-4 justify-center lg:justify-start text-blue-900'>
               <div>
                 <h3 className='text-4xl font-bold'>18+</h3>
                 <p>YEARS OF EXCELLENCE</p>
@@ -33,8 +33,8 @@ export const Hero = () => {
             </div>
 
             <div className='flex gap-2 justify-center lg:justify-start mb-2'>
-              <button className='border-2 border-slate-300 rounded-2xl w-50 py-2 focus:bg-blue-500 transition-all focus:text-white'>Start Your Journey</button>
-              <button className='border-2 border-slate-300 rounded-2xl w-40 py-2 focus:bg-green-500 transition-all focus:text-white'>Contact</button>
+              <button className='border-2 border-slate-300 rounded-2xl w-50 py-2 focus:bg-blue-500 transition-all focus:text-white hover:bg-blue-500 hover:text-white'>Start Your Journey</button>
+              <button className='border-2 border-slate-300 rounded-2xl w-40 py-2 focus:bg-green-500 transition-all focus:text-white hover:bg-slate-500 hover:text-white'>Contact</button>
             </div>           
            </div><br />
 

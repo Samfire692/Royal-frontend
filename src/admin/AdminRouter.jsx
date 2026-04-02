@@ -8,6 +8,7 @@ import { AdminSitemanagement } from './AdminSitemanagement'
 import { Promotion } from './Promotion'
 import { AdminSignin } from './AdminSignin'
 import { AdminAnnouncementBoard } from './AdminAnnouncementBoard'
+import { Signup } from './Signup'
 import { FaBars, FaTimes, FaSearch, FaBell } from 'react-icons/fa'
 import { Search } from './Search'
 import { Login } from './Login'
@@ -18,7 +19,7 @@ export const AdminRouter = () => {
   return (
    <Routes>
         <Route element={
-          <div className=' bg-white text-black'>
+          <div className='text-black'>
 
           <div className='lg:block hidden'>
             <AdminNavbar />
@@ -35,21 +36,19 @@ export const AdminRouter = () => {
            
           <div className='p-2 flex w-screen justify-between border border-b-slate-400 border-t-0 border-r-0 border-l-0'>
            <div>
-             <button className='border rounded-xl text-2xl text-black w-9 h-9 p-1.5 lg:hidden my-3.5' onClick={()=> setNavbar(true)}><FaBars/></button>
+             <button className='border rounded-xl text-xl text-black p-1.5 lg:hidden mt-3' onClick={()=> setNavbar(true)}><FaBars/></button>
            </div>
 
            <div>
-            <Search/>
+            
            </div>
 
-            <div className='flex justify-around py-1 lg:w-[7vw] lg:gap-0 gap-1.5 lg:mx-0'>
+            <div className='flex justify-around gap-1.5 px-2'>
+              <Search/>
               <Link>
-               <button className='bg-slate-300 p-2 rounded-full my-2'><FaBell className='text-xl'/></button>
+               <button className='bg-slate-300 p-2.5 rounded-full mt-2 h-11 w-11'><FaBell className='text-2xl'/></button>
               </Link>
-
               {/* <img src={profilepic} alt="dummy profile pic" className='w-12 h-12 my-0.5 rounded-full shadow shadow-slate-400'/> */}
-
-              
             </div>
 
           </div>
@@ -73,6 +72,8 @@ export const AdminRouter = () => {
 
         <Route path='/admin/signin' element={<AdminSignin />} />
         </Route>
+
+         <Route path='/admin/signup' element={<Signup/>} />
    </Routes>
   )
 }

@@ -62,13 +62,11 @@ export const Signup = () => {
   }
 
   return (
-     <div className='h-screen flex flex-col lg:flex-row lg:place-items-center lg:justify-start justify-center  text-center lg:text-start px-3'>
-            <div className='lg:w-[50vw]'>
-                <h2 className='text-3xl font-bold lg:w-[33vw] md:w-[80vw] md:mx-auto italic'>"We've been expecting you. Let's get you registered so you can start commanding the day with ease."</h2>
-            </div><br /><br />
+     <div className='px-1'>
     
-            <div className='border-2 border-white pt-6 pb-2 px-3 lg:w-[30vw] md:w-[50vw] md:mx-auto rounded-3xl mb-50 lg:mb-0'>
-                <h3 className='font-bold text-3xl mb-4'>SignUp</h3>
+            <div className='border-2 border-blue-300 bg-slate-300 pt-6 pb-2 px-3 lg:w-[30vw] md:w-[50vw] md:mx-auto rounded-3xl mb-50 lg:mb-0'>
+                <h3 className='font-bold text-3xl mb-4 text-blue-950'>Admin SignUp</h3>
+
                 <form action="" className='flex flex-col gap-2' onSubmit={(e)=> signup(e)} >
                   <div className='relative'>
                      <input type="text"  placeholder='Enter your Fullname' className='w-full py-4 border-2 border-white focus:shadow-slate-900 shadow focus:outline-0 px-2 rounded-2xl' onChange={(e)=> setFullname(e.target.value)}/>
