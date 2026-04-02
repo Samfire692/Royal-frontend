@@ -7,6 +7,7 @@ import { Birthday } from './Dashboard/Birthday'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import axios from 'axios'
+import API from '../api'
 import CountUp from 'react-countup';
 
 export const Dashboard = () => {
@@ -18,7 +19,7 @@ export const Dashboard = () => {
   useEffect (()=> {
     const getStats= async ()=> {
       try{
-        const response = await axios.get("http://localhost:4000/api/authrouter/stats")
+        const response = await API.get("/authrouter/stats")
         setTotalstudents(response.data.totalStudents)
         setTotalteachers(response.data.totalTeachers)
         setTotaladmin(response.data.totalAdmin)
@@ -28,6 +29,7 @@ export const Dashboard = () => {
     };
 
     getStats();
+
   }, [])
   return (
     <div className='text-black lg:w-[93vw] w-[97vw]'>
