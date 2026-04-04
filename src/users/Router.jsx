@@ -11,6 +11,7 @@ import {Role} from './Role'
 import { Navbar } from './Navbar'
 import { Login } from '../admin/Login'
 import { StuSignUp } from '../Students/StuSignUp'
+import { AdmissionForm } from './AdmissionForm'
 
 export const Router = () => {
   return (
@@ -25,7 +26,7 @@ export const Router = () => {
       <Route path='/contacts' element={<Contacts/>}/>
       </Route>
 
-
+      <Route path='admissionform' element={<AdmissionForm/>}/>
       <Route path='role' element={<Role/>}/>
 
       {/* admin */}

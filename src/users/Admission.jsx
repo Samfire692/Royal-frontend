@@ -1,7 +1,32 @@
 import React from 'react'
 import { FaDesktop, FaMobile, FaFile } from 'react-icons/fa'
+import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom';
+import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 
 export const Admission = () => {
+const navigate = useNavigate();
+
+const online =()=> {
+  Swal.fire({
+    imageUrl:schoolLogo,
+    customClass: {
+      popup: 'my-royal-popup' 
+    },
+    imageWidth:80,
+    imageHeight:80,
+    title:"Redirecting...",
+    text:"Preparing your digital enrollment session. Excellence awaits.",
+    showConfirmButton:false,
+    allowOutsideClick: false,
+    timer:5000
+  })
+
+  setTimeout(()=> {
+    navigate('/admissionform')
+  }, 5000)
+}
+
   return (
     <div className='py-4 px-3'>
       <div className='py-3 mb-3'>
@@ -16,7 +41,7 @@ export const Admission = () => {
         <div className='shadow-2xl py-3 px-3 rounded-2xl'>
           <span className='flex gap-1 mb-3'><span className='text-4xl text-blue-800 lg:block hidden'><FaDesktop/></span><span className='text-4xl text-blue-800 lg:hidden'><FaMobile/></span><span className='my-auto  text-blue-900 font-bold'>Online Form</span></span>
           <p>“This online form is here to make the admission process simple and convenient for you. If you prefer, you’re welcome to visit our admissions office and submit your application in person. Either way, our team is ready to assist you and answer any questions along the way.”</p>
-          <button className='p-2 rounded-xl bg-blue-700 text-white mt-3'>Online Form</button>
+          <button className='p-2 rounded-xl bg-blue-700 text-white mt-3' onClick={online}>Online Form</button>
         </div>
 
         {/* offline cards */}
@@ -31,3 +56,5 @@ export const Admission = () => {
     </div>
   )
 }
+
+
