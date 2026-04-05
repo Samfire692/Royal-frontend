@@ -1,8 +1,33 @@
-import React from 'react'
+import React, { useState , useEffect} from 'react'
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 import passportpic from '../assets/Images/admin profile pic.jfif'
+import { supabase } from '../supabaseClient'
+import Swal from 'sweetalert2'
 
 export const AdmissionForm = () => {
+  const [classes, setClasses] = useState([]);
+
+  const fetchClass = async()=> {
+    const {data, error} = await supabase
+      .from('royalclassrooms')
+      .select('*')
+      .order('created_at', {ascending:"true"})
+
+      if(error){
+         Swal.fire({
+           icon:"warning",
+           title:"oops",
+           text:"failed to fetch: " + error.message, 
+          })
+      }else{
+        setClasses(data);
+      }
+  }
+
+  useEffect(() => {
+  fetchClass();
+   }, []);
+
   return (
     <div className='p-2 bg-blue-400 text-white'>
         <div className='text-center py-2 mb-2'>
@@ -70,9 +95,14 @@ export const AdmissionForm = () => {
               <div className='px-2'>
                 <div>
                   <label htmlFor="" className='font-bold'>Class Applying For: </label>
-                  <select name="" id="">
-                   
-                  </select>
+                <select name="classSelect" id="classSelect" className='border w-full p-2 rounded'>
+                  <option className='bg-blue-600' value="">-- Select a Class --</option>
+                  {classes.map((items) => (
+                  <option className='bg-blue-600' key={items.id} value={items.class_name}>
+                  {items.class_name}
+                  </option>
+                 ))}
+                </select>
                 </div>
               </div>
 
