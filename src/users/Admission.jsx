@@ -40,14 +40,19 @@ const online =()=> {
         {/* online cards */}
         <div className='shadow-2xl py-3 px-3 rounded-2xl'>
           <span className='flex gap-1 mb-3'><span className='text-4xl text-blue-800 lg:block hidden'><FaDesktop/></span><span className='text-4xl text-blue-800 lg:hidden'><FaMobile/></span><span className='my-auto  text-blue-900 font-bold'>Online Form</span></span>
-          <p>“This online form is here to make the admission process simple and convenient for you. If you prefer, you’re welcome to visit our admissions office and submit your application in person. Either way, our team is ready to assist you and answer any questions along the way.”</p>
+          <p>“This online form is here to make the admission process simple and convenient for you. If you prefer, you’re welcome to visit our admissions office and submit your application in person. Either way, our team is ready to assist you and answer any questions along the way.”
+          </p><br />
+
+          <p><span className='font-bold'>Note</span>: "Please upload a clear, recent passport-sized photograph. The background must be plain white, and the student's face must be fully visible (no hats or glasses)."</p>
           <button className='p-2 rounded-xl bg-blue-700 text-white mt-3' onClick={online}>Online Form</button>
         </div>
 
         {/* offline cards */}
         <div className='shadow-2xl py-3 px-3 rounded-2xl'>
           <span className='flex mb-3 gap-1'><span className='text-4xl text-blue-800'><FaFile/></span><span className='my-auto text-blue-900 font-bold'>Offline Form</span></span>
-          <p>“If you’d rather apply in person, our admissions office is open and happy to welcome you. You can complete and submit your application offline, and our friendly admissions team will be available to guide you through the process and answer any questions you may have.”</p>
+          <p>“If you’d rather apply in person, our admissions office is open and happy to welcome you. You can complete and submit your application offline, and our friendly admissions team will be available to guide you through the process and answer any questions you may have.”</p><br />
+
+          <p><span className='font-bold'>Note</span>: "Hard copy submissions must be signed by the Guardian and accompanied by the original Birth Certificate for sighting."</p>
           <button className='p-2 rounded-xl bg-blue-700 text-white mt-3'>Download Form</button>
         </div>
 
