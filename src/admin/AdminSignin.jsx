@@ -11,30 +11,31 @@ export const AdminSignin = () => {
  const [activeForm, setActiveform] = useState("admin")
 
   return (
-    <div className=''>
+    <div className='pb-3'>
       <div className='title mb-4'>
         <h2 className='font-bold text-3xl'>Sign Up</h2>
       </div>
 
-      <div className='flex lg:flex-row flex-col gap-2'>
+      <div className='h-[55vh] w-[95vw] flex place-items-center'>
+        <div className='gap-2 lg:w-[60vw] w-full h-fit mx-auto p-2 rounded-2xl' style={{boxShadow:"1px 1px 15px royalblue"}}>
 
-        <div className='h-fit py-4 px-2 bg-blue-500/90 lg:w-[18vw] md:w-[30vw] rounded-xl text-white font-bold flex gap-2 flex-col'>
+        <div className='h-fit mx-auto py-4 px-3 bg-blue-500/90 rounded-xl text-white font-bold flex gap-2 flex-col lg:flex-row justify-evenly'>
 
-        <button className={`p-2 rounded-xl hover:bg-white hover:text-blue-500 text-start ${
+        <button className={`p-3 rounded-xl hover:bg-white hover:text-blue-500 ${
           activeForm === "admin" ? "bg-white text-blue-500" : "bg-transparent"
-        }`} onClick={()=> setActiveform("admin")}><span className='flex gap-2'><FaKey className='my-auto'/> Admin SignUp</span></button>
+        }`} onClick={()=> setActiveform("admin")}><span className='flex gap-2 justify-center'><FaKey className='my-auto'/> Admin SignUp</span></button>
 
-        <button className={`p-2 rounded-xl hover:bg-white hover:text-blue-500 text-start ${
+        <button className={`p-3 rounded-xl hover:bg-white hover:text-blue-500 ${
           activeForm === "teacher" ? "bg-white text-blue-500" : "bg-transparent"
-        }`} onClick={()=> setActiveform("teacher")}><span className='flex gap-2'><FaChalkboardTeacher className='my-auto'/> Teacher's SignUp</span></button>
+        }`} onClick={()=> setActiveform("teacher")}><span className='flex gap-2 justify-center'><FaChalkboardTeacher className='my-auto'/> Teacher's SignUp</span></button>
 
-        <button className={`p-2 rounded-xl hover:bg-white hover:text-blue-500 text-start ${
+        <button className={`p-3 rounded-xl hover:bg-white hover:text-blue-500 ${
           activeForm === "student" ? "bg-white text-blue-500" : "bg-transparent"
-        }`} onClick={()=> setActiveform("student")}><span className='flex gap-2'><FaUser className='my-auto'/> Student's SignUp</span></button>
+        }`} onClick={()=> setActiveform("student")}><span className='flex gap-2 justify-center'><FaUser className='my-auto'/> Student's SignUp</span></button>
 
-      </div>
+      </div><br />
 
-      <div className='mx-auto w-[95vw] lg:w-fit'>
+      <div className='lg:w-[93vw]'>
         {activeForm === "admin" && (
           <Signup/>
         )}
@@ -48,6 +49,8 @@ export const AdminSignin = () => {
         )}
         
       </div>
+      </div>
+
       </div>
     </div>
   )

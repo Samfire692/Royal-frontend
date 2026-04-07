@@ -31,7 +31,6 @@ export const Router = () => {
 
       {/* admin */}
       {/* <Route path='/admin/' element={<Login/>}></Route> */}
-      <Route path='/admin/' element={<Login/>}></Route>
       <Route path='/student/' element={<StuSignUp/>}></Route>
     </Routes>
   )

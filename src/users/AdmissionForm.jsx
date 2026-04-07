@@ -3,14 +3,15 @@ import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 import { supabase } from '../supabaseClient'
 import Swal from 'sweetalert2'
 import { FaPlus, FaSpinner } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 export const AdmissionForm = () => {
+  const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
-  const [imgPreview, setImgpreview] = useState(null); // For the "Ghost Link"
-  const [imageFile, setImageFile] = useState(null);   // For the actual file upload
+  const [imgPreview, setImgpreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Form State
   const [formData, setFormData] = useState({
     fullname: '',
     email: '',
@@ -41,38 +42,79 @@ export const AdmissionForm = () => {
     fetchClass();
   }, []);
 
-  // 1. Image Preview Logic
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (file && file.size > 2 * 1024 * 1024) {
+    Swal.fire('Too Big!', 'Please upload a passport less than 2MB', 'error');
+    e.target.value = ""; 
+    return;
+  }
+
     if (file) {
       setImageFile(file);
-      setImgpreview(URL.createObjectURL(file)); // Creates the "Ghost Link"
+      setImgpreview(URL.createObjectURL(file));
     }
   };
 
-  // 2. Submit Logic
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Note: You'll need to create a table named 'royal_students' in Supabase
-    const { error } = await supabase
-      .from('royal_students') 
-      .insert([{
-        ...formData,
-        passport_url: "pending_upload", // You can handle Storage bucket later
-        created_at: new Date()
-      }]);
+    try {
+      // 1. Check if image exists
+      if (!imageFile) {
+        Swal.fire('Missing Photo', 'Please upload a passport photo first!', 'warning');
+        setLoading(false);
+        return;
+      }
 
-    if (error) {
-      Swal.fire({ icon: 'error', title: 'Submission Failed', text: error.message });
-    } else {
-      Swal.fire({ icon: 'success', title: 'Application Sent!', text: 'Welcome to Royal Ambassadors Schools' });
-      // Reset form
-      setFormData({});
+      // 2. Prepare Unique Filename (to avoid overwriting)
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // 3. UPLOAD TO STORAGE BUCKET
+      const { error: uploadError } = await supabase.storage
+        .from('passports') // Make sure this matches your bucket name exactly!
+        .upload(filePath, imageFile);
+
+      if (uploadError) throw uploadError;
+
+      // 4. INSERT INTO DATABASE TABLE
+      const { error: insertError } = await supabase
+        .from('royal_admissionForm')
+        .insert([{
+          ...formData,
+          passport_url: filePath, // Saving the REAL filename, not "pending_upload"
+          created_at: new Date()
+        }]);
+
+      if (insertError) throw insertError;
+
+      // 5. SUCCESS!
+      Swal.fire({ 
+        icon: 'success', 
+        title: 'Application Sent!', 
+        text: 'Welcome to Royal Ambassadors Schools. Redirecting...' 
+      });
+      
+      setTimeout(() => {
+        navigate("/admission");
+      }, 2000);
+
       setImgpreview(null);
+      setImageFile(null);
+
+    } catch (error) {
+      console.error("Submission Error:", error.message);
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Submission Failed', 
+        text: error.message 
+      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -100,7 +142,7 @@ export const AdmissionForm = () => {
                       type="file" 
                       accept="image/*" 
                       onChange={handleImageChange} 
-                      className='absolute inset-0 opacity-0 cursor-pointer z-10' 
+                      className='absolute inset-0 opacity-0 cursor-pointer z-10' required 
                     />
                     
                     {imgPreview ? (

@@ -20,8 +20,8 @@ export const Total = () => {
            
            </div>
            <div className='flex gap-3 justify-center mt-4'>
-             <p className='flex gap-1'><div className='bg-blue-600 w-3 h-3 my-auto'></div> Male</p>
-             <p className='flex gap-1'><div className='bg-red-600 w-3 h-3 my-auto'></div> Female</p>
+             <p className='flex gap-1'><span className='bg-blue-600 w-3 h-3 my-auto'></span> Male</p>
+             <p className='flex gap-1'><span className='bg-red-600 w-3 h-3 my-auto'></span> Female</p>
            </div>
           </div>
   )

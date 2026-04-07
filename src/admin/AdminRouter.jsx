@@ -12,6 +12,7 @@ import { Signup } from './Signup'
 import { FaBars, FaTimes, FaSearch, FaBell } from 'react-icons/fa'
 import { Search } from './Search'
 import { Login } from './Login'
+import { AdminForm } from './AdminForm'
 
 export const AdminRouter = () => {
   const [navbar, setNavbar] = useState(false)
@@ -60,7 +61,6 @@ export const AdminRouter = () => {
         </div>
       }>
         {/* CHILD ROUTES: No need for /admin/ prefix here because they are nested */}
-        <Route index element={<Login />} />
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='profile' element={<AdminProfile />} />
         <Route path='sitemanagement' element={<AdminSitemanagement />} />
@@ -70,7 +70,9 @@ export const AdminRouter = () => {
       </Route>
 
       {/* OUTSIDE THE LAYOUT: Signup page */}
+      <Route path='/admin/' element={<Login />} />
       <Route path='/admin/signup' element={<Signup />} />
+      <Route path='/admin/form' element={<AdminForm/>}/>
     </Routes>
   )
 }
