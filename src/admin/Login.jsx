@@ -28,7 +28,7 @@ export const Login = () => {
         title:"Id Not Found",
         text:"This Admin ID is not registered"
       })
-
+     setLoading(false);
       return;
     }
 
