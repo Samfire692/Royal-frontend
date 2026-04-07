@@ -6,8 +6,6 @@ import { Attendance } from './Dashboard/Attendance'
 import { Birthday } from './Dashboard/Birthday'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import axios from 'axios'
-import API from '../api'
 import CountUp from 'react-countup';
 import { supabase } from '../supabaseClient'
 import Swal from 'sweetalert2'
@@ -23,14 +21,24 @@ export const Dashboard = () => {
       .from("adminsignup")
       .select("*", {count:'exact', head:true})
 
-      if(adminerror){
+       const {count:studentCount, error:studenterror } = await supabase 
+      .from("studentsignup")
+      .select("*", {count:'exact', head:true})
+
+       const {count:teacherCount, error:teachererror } = await supabase 
+      .from("teachersignup")
+      .select("*", {count:'exact', head:true})
+
+      if(adminerror || studenterror || teachererror){
         Swal.fire({
           icon:"error",
           title:"Error",
-          text:adminerror.message
+          text:error.message
         })
       }else{
         setTotaladmin(adminCount || 0);
+        setTotalstudents(studentCount || 0);
+        setTotalteachers(teacherCount || 0);
       }
     };
 
