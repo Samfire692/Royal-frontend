@@ -81,7 +81,7 @@ export const Login = () => {
             </div>
 
              <div className='px-2 lg:px-0 pb-2 mt-2 mb-2 flex place-items-center'>
-              <div className='absolute text-2xl ps-2 text-slate-400'>
+              <div className='absolute text-2xl ps-2 text-slate-400/90'>
                 <FaLock/>
               </div>
               <input type="password" className='border shadow-2xl w-full ps-9 rounded-xl h-13 border-t-0 border-l-0 border-r-0' placeholder='Enter Your Password' onChange={(e)=> setPassword(e.target.value)}/>
