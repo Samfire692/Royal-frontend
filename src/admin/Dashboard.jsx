@@ -9,6 +9,8 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import API from '../api'
 import CountUp from 'react-countup';
+import { supabase } from '../supabaseClient'
+import Swal from 'sweetalert2'
 
 export const Dashboard = () => {
 
@@ -16,20 +18,24 @@ export const Dashboard = () => {
   const [totalStudents, setTotalstudents] = useState(0)
   const [totalTeachers, setTotalteachers] = useState(0)
 
-  useEffect (()=> {
-    const getStats= async ()=> {
-      try{
-        const response = await API.get("authrouter/stats")
-        setTotalstudents(response.data.totalStudents)
-        setTotalteachers(response.data.totalTeachers)
-        setTotaladmin(response.data.totalAdmin)
-      }catch(err){
-        console.log("Stats error:", err)
-      } 
+   const getStats= async ()=> {
+      const {count:adminCount, error:adminerror } = await supabase 
+      .from("adminsignup")
+      .select("*", {count:'exact', head:true})
+
+      if(adminerror){
+        Swal.fire({
+          icon:"error",
+          title:"Error",
+          text:adminerror.message
+        })
+      }else{
+        setTotaladmin(adminCount || 0);
+      }
     };
 
+  useEffect (()=> {
     getStats();
-
   }, [])
   return (
     <div className='text-black lg:w-[93vw] w-[97vw]'>

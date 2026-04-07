@@ -47,7 +47,7 @@ export const Login = () => {
       Swal.fire({
         icon:"success",
         title:"Successful",
-        text:"Login Successfully"
+        text:"Login Successfull"
       })
       
       setTimeout(()=> {
