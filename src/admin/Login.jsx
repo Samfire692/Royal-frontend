@@ -32,7 +32,7 @@ export const Login = () => {
       return;
     }
 
-    const {data:authData , error:authError} = await supabase.auth.signInWithPassword({
+    const {error:authError} = await supabase.auth.signInWithPassword({
       email:dbData.email,
       password:password
     })
