@@ -1,5 +1,5 @@
 import React from 'react'
-import classes from '../assets/Images/studentsclass.jfif'
+import classes from '../assets/Images/studentsClass.jfif'
 import { FaUser, FaLock, FaSpinner } from 'react-icons/fa'
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
