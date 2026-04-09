@@ -1,19 +1,37 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import building from '/src/assets/Images/Secondary_Building.jpeg'
 import { FaCheckCircle } from 'react-icons/fa'
-import gsap from 'gsap'
-import {useGSAP} from '@gsap/react'
-import { useRef } from 'react'
+import { supabase } from '../../supabaseClient'
 
 export const Hero = () => {
-  
+
+  const [info, setInfo]= useState([])
+
+  const fetchData =async()=> {
+      const {data, error} = await supabase
+      .from("schoolabout")
+      .select("*")
+      .eq("id", 1)
+
+      if(error){
+        console.log("error" + error.message)
+      }else{
+        setInfo(data);
+      }
+  }
+
+  useEffect(()=> {
+    fetchData();
+  }, [])
+
   return (
     <div>
         <section id='hero'>
-         <div className='hero lg:h-[80vh] lg:flex px-3 justify-evenly place-items-center pt-5 lg:pt-0 text-center lg:text-start'>
+          {info.map((item)=> (
+            <div className='hero lg:h-[80vh] lg:flex px-3 justify-evenly place-items-center pt-5 lg:pt-0 text-center lg:text-start' key={item.id}>
            <div>
             <h2 className='lg:w-[46vw] md:w-[80vw] text-blue-600'>Royal Ambassadors Schools</h2>
-            <p className='text-lg'>Motto: <span>Academic, Excellence, Good Morals</span></p>
+            <p className='text-lg'>Motto: {item.motto}<span></span></p>
 
             <div className='flex mt-4 gap-4 mb-4 justify-center lg:justify-start text-blue-900'>
               <div>
@@ -43,7 +61,8 @@ export const Hero = () => {
             <p className='absolute bg-blue-500 text-white py-1.5 rounded-2xl px-2 flex gap-1'><span><FaCheckCircle className='my-1'/></span> Government Approved</p>
           </div>
 
-         </div>
+           </div>
+          ))}
        </section>
     </div>
   )

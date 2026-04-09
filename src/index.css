@@ -31,6 +31,17 @@ button{
     box-shadow: 1px 1px 15px blue;
 }
 
+#nprogress .bar {
+  background: #b573f9 !important; /* Your signature purple */
+  height: 4px !important;
+  box-shadow: 0 0 10px #b573f9, 0 0 5px #b573f9;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: #b573f9 !important;
+  border-left-color: #b573f9 !important;
+}
+
 @media screen and (min-width: 768px) and (max-width: 1024px) {
     p{
         font-size:20px;

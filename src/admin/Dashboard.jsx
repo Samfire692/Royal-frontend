@@ -52,9 +52,9 @@ export const Dashboard = () => {
       <section id='cards'>
         <div className='cards mt-2 lg:pe-4'>
           <h2 className='text-2xl font-bold'>Quick Statistics</h2>
-        <div className='flex flex-wrap justify-around gap-2 lg:gap-0 bg-blue-600/90 rounded-xl py-3 mt-3 px-1'>
+        <div className='grid grid-cols-2 lg:grid-cols-3 gap-2 justify-items-center bg-blue-600/90 rounded-xl py-3 mt-3 px-1'>
          
-        <div className='flex bg-blue-300/90 py-4 px-3 gap-3 rounded-xl place-items-center lg:w-60 w-45 h-30'>
+        <div className='flex bg-blue-300/90 py-4 px-3 gap-3 rounded-xl place-items-center w-45 h-30'>
           <div>
             <h3 className='small'>Admin</h3>
             <h4 className='font-bold text-4xl text-center'>
@@ -69,7 +69,7 @@ export const Dashboard = () => {
         </div>
 
 
-        <div className='flex bg-blue-300/90 py-4 px-3 gap-3 rounded-xl place-items-center lg:w-60 w-45 h-30'>
+        <div className='flex bg-blue-300/90 py-4 px-3 gap-3 rounded-xl place-items-center w-45 h-30'>
           <div>
             <h3 className='small'>Students</h3>
             <h4 className='font-bold text-4xl text-center'>
@@ -83,7 +83,7 @@ export const Dashboard = () => {
             <FaUserGraduate className='text-7xl text-blue-500/30 my-auto mx-auto'/>
         </div>
 
-        <div className='flex bg-blue-300/90 py-4 px-3 gap-3 rounded-xl place-items-center lg:w-60 w-45 h-30'>
+        <div className='flex bg-blue-300/90 py-4 px-3 gap-3 rounded-xl place-items-center w-45 h-30'>
            <div>
             <h3 className='small'>Teachers</h3>
             <h4 className='font-bold text-4xl text-center'> 

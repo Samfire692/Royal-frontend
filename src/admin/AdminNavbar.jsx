@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { FaTachometerAlt, FaUser, FaGlobe, FaArrowCircleUp, FaBullhorn, FaUserPlus, FaDoorOpen } from 'react-icons/fa'
+import { FaTachometerAlt, FaUser, FaGlobe, FaArrowCircleUp, FaBullhorn, FaUserPlus, FaDoorOpen, FaHome } from 'react-icons/fa'
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 
 export const AdminNavbar = () => {
@@ -14,6 +14,11 @@ export const AdminNavbar = () => {
       <div className='mb-10 mt-2'>
         <img src={schoolLogo} alt="logo" className='w-12 lg:w-[4vw] min-w-11.25px rounded-full' />
       </div>
+
+        <NavLink to="/" className={linkClasses}>
+          <FaHome className='text-2xl min-w-7.5px' />
+          <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Home</span>
+        </NavLink>
 
       <div className='flex flex-col gap-4 w-full'>
         <NavLink to="/admin/dashboard" className={linkClasses}>
@@ -50,6 +55,7 @@ export const AdminNavbar = () => {
           <FaDoorOpen className='text-2xl min-w-7.5px' />
           <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Logout</span>
         </NavLink>
+        
       </div>
     </nav>
    </div>

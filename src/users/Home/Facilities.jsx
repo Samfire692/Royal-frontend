@@ -26,7 +26,7 @@ export const Facilities = () => {
              </div>
 
           </div>
-        </section><br /><br />
+        </section>
     </div>
   )
 }
