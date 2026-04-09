@@ -8,6 +8,7 @@ import { supabase } from '../supabaseClient'
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 import { UpcomingEvents } from './Home/UpcomingEvents'
 import { News } from './Home/News'
+import { Testimonial } from './Home/Testimonial'
 
 export const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -15,7 +16,12 @@ export const Home = () => {
 
   useEffect(() => {
     const fetchEverything = async () => {
-        const { data } = await supabase.from('schoolabout').select('*');
+        const { data } = await supabase
+        .from('schoolabout')
+        .select('*')
+        .order("created_at", {ascending:false})
+        .limit(6);
+        
         if(data){
          setInfo(data);
         }
@@ -41,6 +47,7 @@ export const Home = () => {
        <Facilities info={info}/>
        <UpcomingEvents info={info}/>
        <News info={info}/>
+       <Testimonial info={info}/>
     </div>
   )
 }

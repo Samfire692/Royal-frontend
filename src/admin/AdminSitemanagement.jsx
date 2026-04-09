@@ -3,11 +3,12 @@ import { FaNewspaper, FaCalendar, FaTimes } from 'react-icons/fa'
 import { ClassSettings } from './Sitemanagement/ClassSettings'
 import { MissionVision } from './Sitemanagement/MissionVision'
 import { NewsTestimonial } from './Sitemanagement/NewsTestimonial'
+import { Foundation } from './Sitemanagement/Foundation'
 
 
 export const AdminSitemanagement = () => {
  const [postNewUpdates, setPostNewUpadates] = useState(false)
- const [active , setActive] = useState(false)
+ const [active , setActive] = useState('missionvision')
 
   return (
     <div className='lg:w-[93vw] px-2'>
@@ -22,7 +23,7 @@ export const AdminSitemanagement = () => {
             <button className='p-2 rounded-xl hover:bg-white hover:text-black' >Photo Gallery & Media</button> {/* Gallery, Events, Videos */}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "newsTestimonial" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("newsTestimonial")}>News & Testimonials</button> {/* News , Testimonial*/}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "classSettings" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("classSettings")}>Class Settings</button> {/* classes */}
-            <button className='p-2 rounded-xl hover:bg-white hover:text-black'>Admission Desk</button> {/* full view of admission forms submitted*/}
+            <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "foundation" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("foundation")}>Foundation</button> {/* full view of admission forms submitted*/}
            </div>
         </div>
       </section><br />
@@ -39,6 +40,10 @@ export const AdminSitemanagement = () => {
 
           {active === 'newsTestimonial' && (
             <NewsTestimonial/>
+          )}
+
+          {active === 'foundation' && (
+            <Foundation/>
           )}
         </div>
       </section>

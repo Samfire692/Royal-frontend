@@ -6,14 +6,12 @@ import { FaEllipsisV, FaExternalLinkAlt, FaEdit, FaSearchPlus} from 'react-icons
 export const EditDelNews = () => {
 
     const [news, setNews] = useState([]);
-    const [editDel, setEditdel]= useState(null);
-    const [selectedItem, setSelectedItem] = useState(null);
     
     const fetchNews = async()=> {
        const{data, error} = await supabase
        .from("news")
        .select("*")
-       .order("created_at", {ascending:true})
+       .order("created_at", {ascending:false})
 
        if(error){
          Swal.fire({
@@ -130,13 +128,13 @@ export const EditDelNews = () => {
     }, [])
 
   return (
-     <div className='bg-slate-200 border-slate-200 border lg:h-[72vh] min-h-[50vh] overflow-y-scroll p-2 rounded-xl mx-auto lg:w-[28vw] md:w-[45vw]'>
+     <div className='bg-slate-200 border-slate-200 border lg:h-[72vh] min-h-[50vh] overflow-y-scroll p-2 rounded-xl mx-auto lg:w-[28vw] md:w-[45vw] '>
         <div className='mb-2'>
             <h2 className='font-bold text-xl'>Existing News</h2>
         </div><hr />
        {news.map((item)=> (
         <div key={item.id} className='p-1 mt-2'>
-            <div className='bg-white shadow-sm p-3 flex md:justify-between gap-2 rounded-xl' onClick={() => handleView(item)}>
+            <div className='bg-white shadow-sm p-3 flex md:justify-between gap-2 rounded-xl cursor-pointer' onClick={() => handleView(item)}>
                 <img src={item.image_url} alt="" className='w-24 h-24 rounded-xl my-auto'/>
                 <div className='pt-2'>
                     <p className='font-bold text-xl'>{item.title}</p>

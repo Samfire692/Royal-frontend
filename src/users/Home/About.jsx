@@ -33,8 +33,7 @@ export const About = () => {
             <h2 className='text-2xl mb-2 font-bold text-blue-900'>About us</h2>
             <div className="about flex flex-col lg:flex-row justify-around relative">
             <div className='lg:w-[50vw]'>
-              <p>Royal Ambassador School is committed to academic excellence, character development, and disciplined leadership. </p>
-              <button className='border px-2 rounded-4xl py-2 mt-2 focus:bg-blue-400 focus:text-white'>Read more</button><br /><br />
+              <p>Royal Ambassador School is committed to academic excellence, character development, and disciplined leadership. </p><br />
 
               <div className='flex flex-col lg:flex-row md:flex-row gap-4'>
                 <div className='text-center shadow shadow-slate-500 py-4 rounded-2xl px-2 h-44 flex-1'>

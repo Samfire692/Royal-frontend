@@ -17,7 +17,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className={`container-fluid grid lg:flex my-0 pt-3 pb-1 px-1 lg:px-4 fixed w-screen md:px-4 lg:shadow lg:bg-white`} style={{zIndex:"1"}}>
+      <nav className={`container-fluid grid lg:flex my-0 pt-3 pb-1 px-1 lg:px-4 fixed w-screen md:px-4 lg:shadow lg:bg-white`} style={{zIndex:"100"}}>
 
       <div className={`flex justify-between mb-4 lg:mb-0 lg:bg-transparent px-3 py-2 rounded-4xl md:px-4 bg-blue-500`}>
 
@@ -51,7 +51,7 @@ export const Navbar = () => {
      )}
     </nav><br /><br /><br /><br />
 
-      <div className='fixed bottom-10 right-3' style={{zIndex:1}}>
+      <div className='fixed bottom-10 right-3' style={{zIndex:100}}>
          <div className='mb-2 gap-2 flex flex-col place-items-end'>
           <Link to={"/role"} type="button" className='text-2xl shadow shadow-blue-600/60 p-4 lg:p-3 lg:w-12 rounded-full text-white bg-blue-500 cursor-pointer'><FaUser/></Link>
          </div>

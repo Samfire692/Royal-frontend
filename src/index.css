@@ -42,12 +42,3 @@ button{
   border-left-color: #b573f9 !important;
 }
 
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-    p{
-        font-size:20px;
-    }
-
-    h2{
-        font-size:30px;
-    }
-}
