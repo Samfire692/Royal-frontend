@@ -1,100 +1,108 @@
-import React, { useState } from 'react';
-import { supabase } from '../../supabaseClient';
-import Swal from 'sweetalert2';
-import { FaCloudUploadAlt, FaImage } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react'
+import { FaPlus } from 'react-icons/fa'
+import { supabase } from '../../supabaseClient'
+import Swal from 'sweetalert2'
 
 export const Heroimage = () => {
-  const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(null);
+    const [file, setFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [preview, setPreview] = useState(null);
 
-  const handleUpload = async (e) => {
-    try {
-      setUploading(true);
-      const file = e.target.files[0];
-      if (!file) return;
+    // 1. FETCH the existing image URL when the component loads
+    useEffect(() => {
+        const fetchHeroImage = async () => {
+            const { data, error } = await supabase
+                .from('site_settings')
+                .select('hero_image_url')
+                .eq('id', 1)
+                .single();
 
-      // 1. Show a quick preview for the user
-      setPreview(URL.createObjectURL(file));
+            if (data && data.hero_image_url) {
+                setPreview(data.hero_image_url);
+            }
+            if (error) console.error("Error fetching hero image:", error.message);
+        };
+        fetchHeroImage();
+    }, []);
 
-      // 2. Create a unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `hero_bg_${Math.random()}.${fileExt}`;
-      const filePath = `hero/${fileName}`;
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setPreview(URL.createObjectURL(selectedFile)); 
+        }
+    };
 
-      // 3. Upload to Supabase Storage (Bucket name: site-assets)
-      const { error: uploadError } = await supabase.storage
-        .from('site-assets')
-        .upload(filePath, file);
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        if (!file) return Swal.fire('Wait!', 'Please select a new image first.', 'info');
 
-      if (uploadError) throw uploadError;
+        setUploading(true);
+        try {
+            // 2. Upload Image to Supabase Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `hero_${Date.now()}.${fileExt}`; // Use Date.now for unique names
+            const filePath = `uploads/${fileName}`;
 
-      // 4. Get the Public URL
-      const { data } = supabase.storage
-        .from('site-assets')
-        .getPublicUrl(filePath);
+            let { error: uploadError } = await supabase.storage
+                .from('school-images') 
+                .upload(filePath, file);
 
-      const publicUrl = data.publicUrl;
+            if (uploadError) throw uploadError;
 
-      // 5. Save the URL to your 'site_settings' table
-      const { error: dbError } = await supabase
-        .from('site_settings')
-        .upsert({ 
-          key_name: 'hero_image_url', 
-          value_text: publicUrl 
-        }, { onConflict: 'key_name' });
+            // 3. Get the Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('school-images')
+                .getPublicUrl(filePath);
 
-      if (dbError) throw dbError;
+            // 4. Update the Flat Table column
+            const { error: dbError } = await supabase
+                .from('site_settings')
+                .update({ 
+                  hero_image_url: publicUrl 
+                })
+                .eq('id', 1);
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Hero Image Updated!',
-        text: 'The main background has been synchronized.',
-        timer: 2000,
-        showConfirmButton: false
-      });
+            if (dbError) throw dbError;
 
-    } catch (error) {
-      Swal.fire('Error', error.message, 'error');
-    } finally {
-      setUploading(false);
-    }
-  };
+            Swal.fire('Success', 'Hero image updated successfully!', 'success');
+        } catch (error) {
+            Swal.fire('Error', error.message, 'error');
+        } finally {
+            setUploading(false);
+        }
+    };
 
-  return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mt-4">
-      <div className="flex items-center gap-2 mb-4">
-        <FaImage className="text-blue-600" />
-        <h4 className="font-bold text-slate-800 text-sm">Hero Background</h4>
-      </div>
+    return (
+        <div className='mt-3'>
+            <div>
+                <h2 className='font-bold text-xl'>Hero Image</h2>
+            </div>
 
-      <div className={`relative h-48 w-full rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden ${preview ? 'border-blue-400' : 'border-slate-200 bg-slate-50'}`}>
-        
-        {preview ? (
-          <img src={preview} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-40" />
-        ) : null}
+            <form onSubmit={handleUpload}>
+                <div className='relative border border-dashed h-50 w-70 mt-2 rounded-xl mx-auto flex justify-center place-items-center overflow-hidden bg-slate-50'>
+                    {preview ? (
+                        <img src={preview} alt="Hero" className="h-full w-full object-cover" />
+                    ) : (
+                        <FaPlus className='text-5xl text-slate-400'/>
+                    )}
+                    <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className='absolute inset-0 opacity-0 cursor-pointer'
+                    />
+                </div>
 
-        <div className="relative z-10 flex flex-col items-center">
-          {uploading ? (
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-          ) : (
-            <>
-              <FaCloudUploadAlt className="text-4xl text-slate-300 mb-2" />
-              <p className="text-[10px] font-bold text-slate-500 uppercase">Click to change Image</p>
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={handleUpload}
-                disabled={uploading}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-            </>
-          )}
+                <div className='text-center mt-2'>
+                    <button 
+                        disabled={uploading}
+                        className='lg:w-50 w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all font-bold shadow-sm'
+                    >
+                        {uploading ? "Uploading..." : "Update Hero Image"}
+                    </button>
+                </div>
+            </form><br />
         </div>
-      </div>
-      
-      <p className="text-[9px] text-slate-400 mt-3 italic text-center">
-        Best fit: 1920x1080px (Landscape). Max size 2MB.
-      </p>
-    </div>
-  );
-};
+    )
+}

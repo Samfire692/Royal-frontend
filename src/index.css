@@ -3,7 +3,7 @@
 
 .hero h2{
     font-family: "Luckiest Guy", cursive;
-    font-size:50px;
+    font-size:48px;
     font-weight:700;
     letter-spacing:1px;
     line-height:58px;
@@ -40,5 +40,14 @@ button{
 #nprogress .spinner-icon {
   border-top-color: #b573f9 !important;
   border-left-color: #b573f9 !important;
+}
+
+textarea{
+    padding-top: 0px !important;
+    border-radius: 10px !important;
+}
+
+input {
+    border-radius: 10px !important;
 }
 

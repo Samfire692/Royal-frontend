@@ -1,55 +1,100 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../supabaseClient';
+import { FaArrowRight } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2'; // Make sure this is imported
 
 export const News = () => {
-  const [fetchNews, setFetchnews]= useState([]);
+  const [fetchNews, setFetchnews] = useState([]);
 
-  const fetchData = async()=> {
-   
-    const {data,error} = await supabase
-    .from("news")
-    .select("*")
-    .order("created_at", {ascending:false})
-    .limit(4)
+  const fetchData = async () => {
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(3)
 
-    if(error){
-        console.log("error" + error.message)
-    }else{
-        setFetchnews(data);
+    if (error) {
+      console.log("error" + error.message)
+    } else {
+      setFetchnews(data);
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     fetchData();
-  },[])
+  }, [])
+
+  // The function to handle the Swal popup
+  const handleNewsClick = (item) => {
+    const formattedDate = new Date(item.created_at).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    Swal.fire({
+      title: `<span style="color: #1e3a8a; font-weight: bold;">${item.title}</span>`,
+      html: `
+        <div style="text-align: left;">
+          <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 10px;">${formattedDate} | ${item.club || 'General News'}</p>
+          <div style="font-size: 1rem; line-height: 1.6; color: #334155;">
+            ${item.content}
+          </div>
+        </div>
+      `,
+      imageUrl: item.image_url,
+      imageAlt: item.title,
+      imageWidth: 400,
+      imageHeight:300,
+      confirmButtonText: 'Close',
+      confirmButtonColor: '#1d4ed8', // Matches your blue-700/800
+      showCloseButton: true,
+      customClass: {
+        popup: 'rounded-3xl',
+        image:"object-contain"
+      }
+    });
+  };
 
   return (
     <div className='pb-3'>
+      <section id=''>
         <div>
+          <div>
             <h2 className='font-bold text-blue-900 text-2xl px-3'>News</h2>
-        </div><br />
-
-        <section id=''>
-           <div className='grid md:grid-cols-2 gap-8 justify-items-center p-2 max-w-5xl mx-auto shadow-sm shadow-slate-500 rounded-2xl'>
-              {fetchNews.map((item)=> (
-                <div key={item.id} className='shadow-sm w-full shadow-slate-600 flex gap-1 py-3 px-2 rounded-2xl justify-around'>
-                    <img src={item.image_url} alt="" className='min-w-30 max-h-40 rounded-2xl my-auto'/>
-                    <div className='text-center my-auto'>
-                        <span className=''>{item.club}</span>
-                        <h3 className='font-bold text-xl w-50 text-blue-500'>{item.title}</h3>
-                        <p className='w-45 max-h-12 overflow-y-hidden mx-auto'>{item.content}</p>
-                        <span className=''> {new Date(item.created_at).toLocaleDateString('en-US', {
+          </div><br />
+          <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-3 justify-items-center news'>
+            {fetchNews.map((item) => (
+              <div 
+                key={item.id} 
+                className='overflow-hidden' 
+                onClick={() => handleNewsClick(item)} // Trigger Swal here
+              >
+                <div className='flex cursor-pointer'>
+                  <img src={item.image_url} alt="" className='h-70 w-100 object-cover rounded-2xl' />
+                  <div className='absolute text-white p-3'>
+                    <p className='my-auto text-sm w-full'>
+                      {new Date(item.created_at).toLocaleDateString('en-GB', {
                         day: 'numeric',
                         month: 'short',
-                        year: 'numeric'
-                        })}</span><br />
-                        <button className='mt-2 p-2 bg-blue-600 rounded-xl text-white'>Read more</button>
+                        year: 'numeric',
+                      })}
+                    </p>
+                    
+                    <div className='mt-30 mb-2 newsCont'>
+                      <h2 className='text-2xl'>{item.title}</h2>
+                      <p className='max-w-90 h-15 overflow-y-hidden'>{item.content}</p>
+                      <small>{item.club}</small>
                     </div>
+                  </div>
                 </div>
+              </div>
             ))}
-           </div>
-        </section>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

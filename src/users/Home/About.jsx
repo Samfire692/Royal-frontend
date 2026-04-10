@@ -3,6 +3,7 @@ import { FaBullseye, FaEye } from 'react-icons/fa'
 import frontbuilding from '/src/assets/Images/building.jpeg'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../supabaseClient'
+import { AboutImg } from './AboutImg'
 
 
 export const About = () => {
@@ -48,7 +49,7 @@ export const About = () => {
               </div>
             </div><br />
  
-            <img src={frontbuilding} alt="Royal ambassadors schools front building" className='rounded-3xl lg:w-[33vw] h-fit my-auto' />
+           <AboutImg/>
 
         </div>
           </div>
