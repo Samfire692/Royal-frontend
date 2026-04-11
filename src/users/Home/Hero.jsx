@@ -10,11 +10,11 @@ export const Hero = () => {
   const [info, setInfo] = useState([])
 
   const fetchData = async () => {
-    // Corrected: Just target 'site_settings' where all your school info lives now
+    
     const { data, error } = await supabase
       .from("site_settings")
       .select("*")
-      .eq("id", 1); // Get that specific row for Royal Ambassadors
+      .eq("id", 1); 
 
     if (error) {
       console.log("error: " + error.message)
@@ -31,15 +31,14 @@ export const Hero = () => {
     <div>
       <section id='hero'>
         {info.map((item) => (
-          <div className='hero lg:h-[80vh] lg:flex px-3 justify-evenly place-items-center pt-5 lg:pt-0 text-center lg:text-start' key={item.id}>
+          <div className='hero lg:h-[80vh] lg:flex px-3 justify-center place-items-center pt-5 lg:pt-0 text-center lg:text-start' key={item.id}>
             <div>
               <h2 className='max-w-2xl text-blue-600 font-bold text-4xl lg:text-6xl'>Royal Ambassadors Schools</h2>
               <Motto/>
 
-              <div className='mt-4 mb-4 text-blue-900 grid grid-cols-3 px-2'>
-                <div>
-                  {/* Dynamic Stats from Database */}
-                  <h3 className='text-4xl font-bold'>
+              <div className='mt-4 mb-4 text-blue-900 grid lg:grid-cols-4 grid-cols-3 gap-2 px-2 '>
+                <div className='rounded-2xl w-fit px-2 border-r-2 border-l-2 border-amber-400/70'>
+                  <h3 className='text-4xl font-bold text-center'>
                     <CountUp
                      start={0}
                      end={item.stat_years}
@@ -49,9 +48,8 @@ export const Hero = () => {
                   <p className='text-xs'>YEARS OF EXCELLENCE</p>
                 </div>
 
-                <div>
-                  {/* Dynamic Stats from Database */}
-                  <h3 className='text-4xl font-bold'>
+                <div className='rounded-2xl w-fit px-2 border-r-2 border-l-2 border-amber-400/70'>
+                  <h3 className='text-4xl font-bold text-center'>
                     <CountUp
                      start={0}
                      end={item.stat_graduates}
@@ -61,9 +59,8 @@ export const Hero = () => {
                   <p className='text-xs'>STUDENTS GRADUATED</p>
                 </div>
 
-                <div>
-                  {/* Dynamic Stats from Database */}
-                  <h3 className='text-4xl font-bold'>
+                <div className='rounded-2xl w-fit px-2 border-l-2 border-r-2 border-amber-400/70'>
+                  <h3 className='text-4xl font-bold text-center'>
                     <CountUp
                      start={0}
                      end={item.stat_pass_rate}
@@ -81,7 +78,6 @@ export const Hero = () => {
             </div><br />
 
             <div className='relative flex'>
-              {/* Added fallback: Use hero_image_url if it exists, otherwise use local building image */}
               <img src={item.hero_image_url || building} alt="Royal Ambassadors Schools" className='h-70 w-100 rounded-3xl shadow-xl object-cover'/>
               <p className='absolute bg-blue-500 text-white py-1.5 rounded-2xl px-2 flex gap-1 shadow-md'>
                 <span><FaCheckCircle className='my-1'/></span> Government Approved

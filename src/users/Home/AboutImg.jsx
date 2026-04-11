@@ -22,10 +22,10 @@ export const AboutImg = () => {
             fetchData();
           }, [])
   return (
-    <div className="md:mx-auto lg:mx-0">
+    <div className="md:mx-auto">
         {info.map((item)=> (
             <div key={item.id} className="">
-                 <img src={item.about_image_url} alt="Royal ambassadors schools front building" className='h-70 w-100 rounded-3xl shadow-xl object-cover' />
+                 <img src={item.about_image_url} alt="Royal ambassadors schools front building" className='h-100 w-150 rounded-3xl shadow-xl object-cover' />
             </div>
         ))}
     </div>

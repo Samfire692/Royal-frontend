@@ -59,12 +59,14 @@ export const News = () => {
   };
 
   return (
-    <div className='pb-3'>
+    <div className='lg:mt-6 px-3'>
       <section id=''>
         <div>
-          <div>
-            <h2 className='font-bold text-blue-900 text-2xl px-3'>News</h2>
-          </div><br />
+           <div className='mb-12 text-center md:text-left'>
+          <h3 className='text-3xl md:text-4xl font-black text-blue-900 text-start mb-2'>News</h3>
+          <div className='w-20 h-1.5 bg-blue-600 rounded-full mb-6'></div>
+        </div>
+
           <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-3 justify-items-center news'>
             {fetchNews.map((item) => (
               <div 
@@ -85,8 +87,8 @@ export const News = () => {
                     
                     <div className='mt-30 mb-2 newsCont'>
                       <h2 className='text-2xl'>{item.title}</h2>
-                      <p className='max-w-90 h-15 overflow-y-hidden'>{item.content}</p>
-                      <small>{item.club}</small>
+                      <p className='max-w-90 h-13 overflow-y-hidden'>{item.content}</p>
+                      <small className='mt-3 block'>{item.club}</small>
                     </div>
                   </div>
                 </div>
