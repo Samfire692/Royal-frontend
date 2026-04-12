@@ -56,7 +56,7 @@ export const Contacts = () => {
   );
 
   return (
-    <div className="bg-slate-50 min-h-screen pt-8">
+    <div className="bg-slate-50 min-h-screen pt-8 px-3">
       <div className="max-w-7xl mx-auto">
         
         {/* HEADER */}
