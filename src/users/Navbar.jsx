@@ -27,7 +27,7 @@ export const Navbar = () => {
         <Link to="/admission" className={`${isActive('/admission') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Admission</Link>
         <Link to="/facilities" className={`${isActive('/facilities') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Facilities</Link>
         <Link to="/news" className={`${isActive('/news') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>News</Link>
-        <Link to="/events" className={`${isActive('/events') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Events</Link>
+        <Link to="/gallery" className={`${isActive('/gallery') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Gallery</Link>
         <Link to="/contacts" className={`${isActive('/contacts') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Contacts</Link>
       </div>
 
@@ -40,7 +40,7 @@ export const Navbar = () => {
           <Link to="/admission" onClick={() => setNavbar(false)} className={`px-2 py-3 rounded-xl ${isActive('/admission') ? 'bg-white text-blue-600 font-bold' : ''}`}>Admission</Link>
           <Link to="/facilities" onClick={() => setNavbar(false)} className={`px-2 py-3 rounded-xl ${isActive('/facilities') ? 'bg-white text-blue-600 font-bold' : ''}`}>Facilities</Link>
           <Link to="/news" onClick={() => setNavbar(false)} className={`px-2 py-3 rounded-xl ${isActive('/news') ? 'bg-white text-blue-600 font-bold' : ''}`}>News</Link>
-          <Link to="/events" onClick={() => setNavbar(false)} className={`px-2 py-3 rounded-xl ${isActive('/events') ? 'bg-white text-blue-600 font-bold' : ''}`}>Events</Link>
+          <Link to="/gallery" onClick={() => setNavbar(false)} className={`px-2 py-3 rounded-xl ${isActive('/gallery') ? 'bg-white text-blue-600 font-bold' : ''}`}>Gallery</Link>
           <Link to="/contacts" onClick={() => setNavbar(false)} className={`px-2 py-3 rounded-xl ${isActive('/contacts') ? 'bg-white text-blue-600 font-bold' : ''}`}>Contacts</Link>
         </div>
       )}

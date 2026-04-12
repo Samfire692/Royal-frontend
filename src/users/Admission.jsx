@@ -3,6 +3,7 @@ import { FaDesktop, FaMobile, FaFile, FaInfoCircle } from 'react-icons/fa'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom';
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
+import { Footer } from './Footer';
 
 export const Admission = () => {
   const navigate = useNavigate();
@@ -28,9 +29,9 @@ export const Admission = () => {
   }
 
   return (
-    <div className='py-12 px-4 md:px-10 lg:px-20 bg-white'>
+    <div className='pt-12 bg-white'>
       {/* Header Section */}
-      <div className='mb-10 text-center lg:text-left'>
+      <div className='mb-10 text-center lg:text-left px-4'>
         <h2 className='text-4xl font-black text-blue-900 mb-4 uppercase tracking-tighter'>Admission</h2>
         <div className='w-20 h-1.5 bg-blue-600 rounded-full mb-6 mx-auto lg:mx-0'></div>
         <p className='text-slate-600 italic font-medium'>
@@ -102,6 +103,10 @@ export const Admission = () => {
 
         </div>
       </section>
+
+      <div>
+        <Footer/>
+      </div>
     </div>
   )
 }

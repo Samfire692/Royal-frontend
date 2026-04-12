@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { About as HomeAbout } from './Home/About'
 import { supabase } from '../supabaseClient'
 import { FaQuoteLeft, FaQuoteRight } from 'react-icons/fa'
+import { Footer } from './Footer'
 
 export const About = () => {
   const [propietress, setPropietress] = useState([]);
@@ -23,7 +24,7 @@ export const About = () => {
   }, [])
 
   return (
-    <div className='py-10 bg-white'>
+    <div className='pt-10 bg-white'>
       {/* Top Section from Home */}
       <HomeAbout /><br />
 
@@ -74,6 +75,10 @@ export const About = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div>
+        <Footer/>
       </div>
     </div>
   )

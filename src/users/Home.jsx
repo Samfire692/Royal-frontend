@@ -9,6 +9,7 @@ import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 import { UpcomingEvents } from './Home/UpcomingEvents'
 import { News } from './Home/News'
 import { Testimonial } from './Home/Testimonial'
+import { Footer } from './Footer'
 
 export const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -48,6 +49,11 @@ export const Home = () => {
        <UpcomingEvents info={info}/>
        <News info={info}/>
        <Testimonial info={info}/>
+
+       <div>
+        <Footer/>
+       </div>
     </div>
+    
   )
 }

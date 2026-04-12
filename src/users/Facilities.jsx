@@ -9,6 +9,7 @@ import {
   FaArrowRight 
 } from 'react-icons/fa'
 import { supabase } from '../supabaseClient'
+import { Footer } from './Footer'
 
 export const Facilities = () => {
   const [info, setInfo] = useState([]);
@@ -65,7 +66,7 @@ export const Facilities = () => {
   ];
 
   return (
-    <div className='py-4 bg-white'>
+    <div className='pt-4 bg-white'>
       <HomeFacilities /><br />
 
       <div className='px-4 md:px-8 py-16 bg-slate-50/50'>
@@ -145,6 +146,10 @@ export const Facilities = () => {
             </Link>
           </div>
         </div>
+      </div>
+
+      <div>
+        <Footer/>
       </div>
     </div>
   )

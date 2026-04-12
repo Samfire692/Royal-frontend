@@ -1,102 +1,147 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../../supabaseClient';
-import { FaArrowRight } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2'; // Make sure this is imported
+import { FaArrowRight, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+
+// Import Swiper React components and styles
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 export const News = () => {
   const [fetchNews, setFetchnews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     const { data, error } = await supabase
       .from("news")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(3)
+      .limit(4); // Fetch more for a better slider experience
 
     if (error) {
       console.log("error" + error.message)
     } else {
       setFetchnews(data);
     }
+    setLoading(false);
   }
 
   useEffect(() => {
     fetchData();
   }, [])
 
-  // The function to handle the Swal popup
   const handleNewsClick = (item) => {
-    const formattedDate = new Date(item.created_at).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-
     Swal.fire({
-      title: `<span style="color: #1e3a8a; font-weight: bold;">${item.title}</span>`,
-      html: `
-        <div style="text-align: left;">
-          <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 10px;">${formattedDate} | ${item.club || 'General News'}</p>
-          <div style="font-size: 1rem; line-height: 1.6; color: #334155;">
-            ${item.content}
-          </div>
-        </div>
-      `,
-      imageUrl: item.image_url,
-      imageAlt: item.title,
-      imageWidth: 400,
-      imageHeight:300,
-      confirmButtonText: 'Close',
-      confirmButtonColor: '#1d4ed8', // Matches your blue-700/800
-      showCloseButton: true,
-      customClass: {
-        popup: 'rounded-3xl',
-        image:"object-contain"
-      }
-    });
+  title: `<span style="color: #1e3a8a; font-weight: 900; text-transform: uppercase;">${item.title}</span>`,
+  html: `<div style="text-align: left; line-height: 1.8; color: #475569;">${item.content}</div>`,
+  imageUrl: item.image_url,
+  imageAlt: item.title,
+  imageWidth: "400px",
+  imageHeight: "300px",
+  confirmButtonText: 'CLOSE',
+  confirmButtonColor: '#2563eb',
+  customClass: { 
+    popup: 'rounded-[2.5rem]', 
+    // Added 'object-cover' here. 
+    // If using Tailwind, this works. If not, see the 'didOpen' fix below.
+    image: 'rounded-2xl object-cover' 
+  },
+  // This ensures the style is applied even if SweetAlert tries to override it
+  didOpen: () => {
+    const img = Swal.getImage();
+    if (img) {
+      img.style.objectFit = 'cover';
+    }
+  }
+});
   };
 
   return (
-    <div className='lg:mt-6 px-3'>
-      <section id=''>
+    <div className='max-w-screen mx-auto py-16 px-6'>
+      {/* HEADER */}
+      <div className='flex items-center justify-between mb-10'>
         <div>
-           <div className='mb-12 text-center md:text-left'>
-          <h3 className='text-3xl md:text-4xl font-black text-blue-900 text-start mb-2'>News</h3>
-          <div className='w-20 h-1.5 bg-blue-600 rounded-full mb-6'></div>
+          <h3 className='text-3xl font-black text-blue-950 uppercase tracking-tighter'>
+            Royal <span className='text-blue-600'>News</span>
+          </h3>
+          <div className='w-12 h-1.5 bg-blue-600 rounded-full mt-2'></div>
         </div>
+        
+        {/* CUSTOM NAVIGATION BUTTONS */}
+        <div className='flex gap-2'>
+          <button className='swiper-prev-btn w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm'>
+            <FaChevronLeft />
+          </button>
+          <button className='swiper-next-btn w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm'>
+            <FaChevronRight />
+          </button>
+        </div>
+      </div>
 
-          <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-3 justify-items-center news'>
-            {fetchNews.map((item) => (
-              <div 
-                key={item.id} 
-                className='overflow-hidden' 
-                onClick={() => handleNewsClick(item)} // Trigger Swal here
-              >
-                <div className='flex cursor-pointer'>
-                  <img src={item.image_url} alt="" className='h-70 w-100 object-cover rounded-2xl' />
-                  <div className='absolute text-white p-3'>
-                    <p className='my-auto text-sm w-full'>
-                      {new Date(item.created_at).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
+      {loading ? (
+        <div className='h-64 flex items-center justify-center animate-pulse text-slate-300 font-black uppercase tracking-widest'>Loading Newsfeed...</div>
+      ) : (
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={20}
+          slidesPerView={1}
+          navigation={{
+            nextEl: '.swiper-next-btn',
+            prevEl: '.swiper-prev-btn',
+          }}
+          autoplay={{ delay: 4000 }}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+            1280: { slidesPerView: 4 },
+            1536: { slidesPerView: 5 }, // This is your 5-column requirement
+          }}
+          className="pb-12"
+        >
+          {fetchNews.map((item) => {
+            const date = new Date(item.created_at);
+            return (
+              <SwiperSlide key={item.id}>
+                <div 
+                  onClick={() => handleNewsClick(item)}
+                  className='group relative bg-white rounded-xl overflow-hidden border border-slate-50 shadow-lg shadow-slate-200/50 cursor-pointer h-full transition-all duration-500 hover:-translate-y-2'
+                >
+                  {/* IMAGE */}
+                  <div className='h-48 overflow-hidden relative'>
+                    <img 
+                      src={item.image_url} 
+                      className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110' 
+                      alt={item.title} 
+                    />
+                    <div className='absolute top-4 left-4 bg-blue-600 text-white text-[8px] font-black px-3 py-1 rounded-lg uppercase tracking-widest'>
+                      {date.toLocaleString('default', { month: 'short' })} {date.getDate()}
+                    </div>
+                  </div>
+
+                  {/* CONTENT */}
+                  <div className='p-6'>
+                    <span className='text-[8px] font-black text-blue-500 uppercase tracking-widest mb-2 block'>
+                      {item.club || 'School News'}
+                    </span>
+                    <h2 className='text-lg font-black text-blue-950 leading-tight mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors uppercase'>
+                      {item.title}
+                    </h2>
+                    <p className='text-slate-500 text-xs font-medium line-clamp-2 mb-4'>
+                      {item.content}
                     </p>
-                    
-                    <div className='mt-30 mb-2 newsCont'>
-                      <h2 className='text-2xl'>{item.title}</h2>
-                      <p className='max-w-90 h-13 overflow-y-hidden'>{item.content}</p>
-                      <small className='mt-3 block'>{item.club}</small>
+                    <div className='flex items-center gap-2 text-[9px] font-black text-blue-600 uppercase tracking-widest group-hover:gap-4 transition-all'>
+                      Read More <FaArrowRight />
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      )}
     </div>
   )
 }
