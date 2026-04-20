@@ -1,6 +1,6 @@
 import React from 'react'
 import classes from '../assets/Images/studentsClass.jfif'
-import { FaUser, FaLock, FaSpinner } from 'react-icons/fa'
+import { FaUser, FaLock, FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import Swal from 'sweetalert2'
@@ -10,7 +10,8 @@ export const Login = () => {
   const navigate = useNavigate();
   const [Id, setId] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading]= useState(false)
+  const [loading, setLoading]= useState(false);
+  const [passwords, setPasswords]= useState(false);
 
   const getData = async(e)=> {
     e.preventDefault();
@@ -29,10 +30,9 @@ export const Login = () => {
         text:"This Admin ID is not registered"
       })
      setLoading(false);
-      return;
     }
 
-    const {error:authError} = await supabase.auth.signInWithPassword({
+    const {data:authData, error:authError} = await supabase.auth.signInWithPassword({
       email:dbData.email,
       password:password
     })
@@ -42,12 +42,19 @@ export const Login = () => {
         icon:"error",
         title:"Auth Error",
         text:authError.message
-      })
+      })   
     }else{
+      const AdminProfile = {
+        id:authData.user.id,
+        email:dbData.email
+      }
+
+      localStorage.setItem("AdminProfile", JSON.stringify(AdminProfile));
+
       Swal.fire({
         icon:"success",
         title:"Successful",
-        text:"Login Successfull"
+        text:"Login Successful"
       })
       
       setTimeout(()=> {
@@ -74,17 +81,17 @@ export const Login = () => {
           <br />
           <form action="" onSubmit={getData}>
             <div className='px-2 lg:px-0 pb-2 mt-2 mb-2 flex place-items-center'>
-              <div className='absolute text-2xl ps-2 text-slate-400'>
+              <div className='absolute right-9 lg:left-[31vw] text-2xl ps-2 text-slate-400'>
                 <FaUser/>
               </div>
-              <input type="text" className='border shadow-2xl w-full ps-9 rounded-xl h-13 border-t-0 border-l-0 border-r-0' placeholder='Enter Your ID' onChange={(e)=> setId(e.target.value)}/>
+              <input type="text" className='border shadow-2xl w-full px-3 rounded-xl h-13 border-t-0 border-l-0 border-r-0' placeholder='Enter Your ID' onChange={(e)=> setId(e.target.value)}/>
             </div>
 
-             <div className='px-2 lg:px-0 pb-2 mt-2 mb-2 flex place-items-center'>
-              <div className='absolute text-2xl ps-2 text-slate-400/90'>
-                <FaLock/>
+             <div className='pb-2 mt-2 mb-2 flex place-items-center'>
+              <div className='absolute right-9 lg:left-[31vw] text-2xl ps-2 text-slate-400/90'>
+                <button onClick={()=> setPasswords(!passwords)} type='button'>{passwords ? <FaEye/> : <FaEyeSlash/>}</button>
               </div>
-              <input type="password" className='border shadow-2xl w-full ps-9 rounded-xl h-13 border-t-0 border-l-0 border-r-0' placeholder='Enter Your Password' onChange={(e)=> setPassword(e.target.value)}/>
+              <input type={passwords ? "text" : "password"} className='border shadow-2xl w-full px-3 rounded-xl h-13 border-t-0 border-l-0 border-r-0' placeholder='Enter Your Password' onChange={(e)=> setPassword(e.target.value)}/>
             </div>
 
              <div className='flex justify-center'>

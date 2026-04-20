@@ -2,8 +2,17 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { FaTachometerAlt, FaUser, FaGlobe, FaArrowCircleUp, FaBullhorn, FaUserPlus, FaDoorOpen, FaHome } from 'react-icons/fa'
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
+import { supabase } from '../supabaseClient'
 
 export const AdminNavbar = () => {
+
+  const handleLogout = async()=>{
+   await supabase.auth.signOut();
+
+   localStorage.clear();
+  }
+
+
   const linkClasses = ({ isActive }) => 
     `flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-all overflow-hidden ` + 
     (isActive ? 'bg-white text-blue-600 shadow-md' : 'text-white hover:bg-blue-400')
@@ -15,12 +24,12 @@ export const AdminNavbar = () => {
         <img src={schoolLogo} alt="logo" className='w-12 lg:w-[4vw] min-w-11.25px rounded-full' />
       </div>
 
-        <NavLink to="/" className={linkClasses}>
+      <div className='flex flex-col gap-4 w-full'>
+         <NavLink to="/" className={linkClasses}>
           <FaHome className='text-2xl min-w-7.5px' />
           <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Home</span>
         </NavLink>
 
-      <div className='flex flex-col gap-4 w-full'>
         <NavLink to="/admin/dashboard" className={linkClasses}>
           <FaTachometerAlt className='text-2xl min-w-7.5px' />
           <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Dashboard</span>
@@ -51,7 +60,7 @@ export const AdminNavbar = () => {
           <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Sign In</span>
         </NavLink>
 
-        <NavLink to="/login" className='flex items-center gap-3 w-full px-3 py-2 mt-20 text-red-100 hover:bg-red-600 rounded-lg transition-all'>
+        <NavLink to="/admin/" className='flex items-center gap-3 w-full px-3 py-2 mt-20 text-red-100 hover:bg-red-600 rounded-lg transition-all' onClick={handleLogout}>
           <FaDoorOpen className='text-2xl min-w-7.5px' />
           <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Logout</span>
         </NavLink>

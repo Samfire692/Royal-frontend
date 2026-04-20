@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import profilepic from '../assets/Images/admin profile pic.jfif'
-import { Routes, Route, Outlet, Link } from 'react-router-dom'
+import { Routes, Route, Outlet, Link, useLocation } from 'react-router-dom'
 import { Dashboard } from './Dashboard'
 import { AdminNavbar } from './AdminNavbar'
 import { AdminProfile } from './AdminProfile'
@@ -13,6 +13,7 @@ import { FaBars, FaTimes, FaSearch, FaBell } from 'react-icons/fa'
 import { Search } from './Search'
 import { Login } from './Login'
 import { AdminForm } from './AdminForm'
+import { Navigate } from 'react-router-dom'
 
 export const AdminRouter = () => {
   const [navbar, setNavbar] = useState(false)
@@ -30,8 +31,8 @@ export const AdminRouter = () => {
           <div>
             {navbar && (
               <div className='flex'>
-                <AdminNavbar />
-                <button className='text-white border-0 rounded-xl w-9 h-9 p-1.5 absolute text-2xl right-22 md:left-90 top-2 bg-red-500' onClick={() => setNavbar(false)}><FaTimes /></button>
+                <AdminNavbar/>
+                <button className='text-white border-0 rounded-xl w-9 h-9 p-1.5 absolute left-[72vw] md:left-[41vw] text-2xl top-2 bg-red-500' onClick={() => setNavbar(false)} style={{zIndex:"100"}}><FaTimes /></button>
               </div>
             )}
           </div>
@@ -54,7 +55,7 @@ export const AdminRouter = () => {
 
           </div>
 
-          <div className='px-2 lg:mx-20 pt-2'>
+          <div className='px-2 lg:mx-20 pt-2 lg:w-[93vw] w-full'>
             {/* CHILD PAGES LOAD HERE */}
             <Outlet />
           </div>

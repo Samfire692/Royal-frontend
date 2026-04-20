@@ -12,7 +12,7 @@ export const Form = () => {
     .from("royal_admissionForm")
     .select("*")
     .order("created_at", {ascending:true})
-    .limit(5) 
+    .limit(4) 
 
     if(error){
        Swal.fire({ icon: "warning", title: "oops", text: "failed to fetch: " + error.message })
@@ -26,14 +26,13 @@ export const Form = () => {
   },[])
 
   return (
-        <div className='md:w-[60vw] border p-2 rounded-2xl bg-slate-300'>
-             <h2 className='font-bold text-2xl'>New Student Enrollment</h2>
-             <p className=''>Admission counts = {allAdmission.length}</p>
+        <div className='md:min-w-[60vw] px-3 py-2 rounded-2xl' style={{boxShadow:"0px 0px 3px royalblue"}}>
+             <h2 className='font-bold text-2xl text-blue-900'>New Student Enrollment</h2>
 
-             <Link className='flex flex-col gap-2 mt-2' to={"/admin/form"}>
+             <Link className='flex flex-col gap-2 mt-4' to={"/admin/form"}>
               {allAdmission.map((form) => (
-                <div key={form.id} className='flex justify-between p-3 bg-white rounded-xl'>
-                  <p>{form.fullname}</p>
+                <div key={form.id} className='flex justify-between p-3 shadow-sm shadow-slate-400/60 bg-white rounded-xl hover:scale-102 transition-all'>
+                  <p className='font-bold text-blue-700'>{form.fullname}</p>
                   <span className='my-auto'><FaChevronRight/></span>
                 </div>
               ))}
