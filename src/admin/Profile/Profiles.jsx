@@ -7,7 +7,8 @@ export const Profiles = () => {
   const [profile, setProfile]= useState([]);
   const [loading, setLoading]= useState(true);
 
-   const fetchdata = async()=>{
+  useEffect(()=> {
+    const fetchdata = async()=>{
     const {data: {user}} = await supabase.auth.getUser();
     const {data, error} = await supabase
     .from("adminsignup")
@@ -22,7 +23,6 @@ export const Profiles = () => {
     }
   }
 
-  useEffect(()=> {
   fetchdata();
   }, [])
 
