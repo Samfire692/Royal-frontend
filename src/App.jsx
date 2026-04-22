@@ -8,7 +8,7 @@ import { StudentRouter } from './Students/StudentRouter';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { useLocation } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
+
 
 
 function App() {
