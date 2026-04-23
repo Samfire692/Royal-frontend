@@ -43,6 +43,8 @@ export const Login = () => {
         title:"Auth Error",
         text:authError.message
       })   
+
+      setLoading(false);
     }else{
       const AdminProfile = {
         id:authData.user.id,
