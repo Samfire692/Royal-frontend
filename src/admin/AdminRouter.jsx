@@ -21,7 +21,7 @@ export const AdminRouter = () => {
   return (
     <Routes>
       {/* PARENT ROUTE: This handles the Layout and Sidebar */}
-      <Route path="/admin" element={
+      <Route path="/admin/*" element={
         <div className='text-black'>
 
           <div className='lg:block hidden'>
@@ -71,7 +71,7 @@ export const AdminRouter = () => {
       </Route>
 
       {/* OUTSIDE THE LAYOUT: Signup page */}
-      <Route path='/admin/' element={<Login />} />
+      <Route path='/admin/login' element={<Login />} />
       <Route path='/admin/signup' element={<Signup />} />
       <Route path='/admin/form' element={<AdminForm/>}/>
     </Routes>
