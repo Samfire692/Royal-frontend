@@ -5,6 +5,7 @@ import { MissionVision } from './Sitemanagement/MissionVision'
 import { NewsTestimonial } from './Sitemanagement/NewsTestimonial'
 import { Foundation } from './Sitemanagement/Foundation'
 import { Gallery } from './Sitemanagement/Gallery'
+import { SubjectSetting } from './Sitemanagement/SubjectSetting'
 
 
 export const AdminSitemanagement = () => {
@@ -24,6 +25,7 @@ export const AdminSitemanagement = () => {
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "gallery" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("gallery")} >Photo Gallery & Media</button> {/* Gallery, Events, Videos */}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "newsTestimonial" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("newsTestimonial")}>News & Testimonials</button> {/* News , Testimonial*/}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "classSettings" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("classSettings")}>Class Settings</button> {/* classes */}
+            <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "subjectSettings" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("subjectSettings")}>Subjects Settings</button> {/* classes */}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "foundation" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("foundation")}>Foundation</button> {/* full view of admission forms submitted*/}
            </div>
         </div>
@@ -49,6 +51,10 @@ export const AdminSitemanagement = () => {
 
           {active === 'gallery' && (
             <Gallery/>
+          )}
+
+           {active === 'subjectSettings' && (
+            <SubjectSetting/>
           )}
         </div>
       </section>

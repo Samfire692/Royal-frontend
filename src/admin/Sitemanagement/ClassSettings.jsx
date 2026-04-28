@@ -144,7 +144,7 @@ export const ClassSettings = () => {
                  </form> 
                 </div>
 
-                <div className='w-full mt-2'>
+                <div className='w-full mt-2 grid lg:grid-cols-4 grid-cols-2'>
                   {allClasses.map((item, index)=> (
                     <div key={item.id} className=''>
                         <div className='flex justify-between pt-2'>
