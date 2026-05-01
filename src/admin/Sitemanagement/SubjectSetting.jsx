@@ -70,7 +70,7 @@ export const SubjectSetting = () => {
   const deleteSubject = async(id)=> {
 
     const result = await Swal.fire({
-      icon:"warning",
+      icon:"question",
       title:"Are you sure ?",
       text:"You wont be able to revert this!",
       showCancelButton:true,
@@ -113,6 +113,7 @@ export const SubjectSetting = () => {
   }
 
  const editSubject = async(id)=> {
+  
    const editresult = await Swal.fire({
     icon:"question",
     title:"Are you sure ?",
@@ -124,6 +125,7 @@ export const SubjectSetting = () => {
    })
 
    if(editresult.isConfirmed){
+    setEditloading(id)
     try{
       const {error} = await supabase
       .from("subjects")
@@ -174,18 +176,14 @@ export const SubjectSetting = () => {
     fetchsubject()
   }
 
+  const bottom = ()=> {
+    scrollBottom()
+  }
+
   useEffect(()=>{
     fetchsubject();
   },[])
 
- useEffect(() => {
-  if (subject.length > prevLength) {
-    setTimeout(() => {
-      scrollBottom();
-    }, 100); 
-  }
-  setPrevLength(subject.length);
-}, [subject, prevLength]);
 
   if(loading){
    return(
@@ -220,7 +218,7 @@ export const SubjectSetting = () => {
       </section>
 
       <section id='subjectArray'>
-        <div className='subjectArray mt-3 pb-3 grid grid-cols-1 md:grid-cols-3 gap-3'>
+        <div className='subjectArray mt-3 pb-18 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-3'>
 
 {/* Subject Array */}
          {subjectArray.map((item)=> (
@@ -236,7 +234,14 @@ export const SubjectSetting = () => {
          {editMenu === item.id && (
            <div className='mt-2 flex gap-1'>
             <input type="text" className='border w-full h-8 p-2' defaultValue={item.subject_name} onChange={(e)=> setNewsubject(e.target.value)}/>
-            <button className='bg-blue-600 w-12 h-7 text-white rounded my-auto' onClick={()=>editSubject(item.id)}><span className='flex justify-center'><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="18" d="M21 5l-2.5 15M21 5l-12 8.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="18;0"/></path><path stroke-dasharray="24" d="M21 5l-19 7.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0"/></path><path stroke-dasharray="14" stroke-dashoffset="14" d="M18.5 20l-9.5 -6.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.3s" to="0"/></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M2 12.5l7 1"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.3s" to="0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M12 16l-3 3M9 13.5l0 5.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.3s" to="0"/></path></g></svg></span></button>
+            <button className='bg-blue-600 w-12 h-7 text-white rounded my-auto' onClick={()=>editSubject(item.id)}>
+              {editLoading
+               ?
+               <span className='flex justify-center'><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><g><circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity="0.14" /><circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity="0.29" /><circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity="0.43" /><circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity="0.57" /><circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity="0.71" /><circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity="0.86" /><circle cx="12" cy="21.5" r="1.5" fill="currentColor" /><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" /></g></svg></span>
+               :
+               <span className='flex justify-center'><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="18" d="M21 5l-2.5 15M21 5l-12 8.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="18;0"/></path><path stroke-dasharray="24" d="M21 5l-19 7.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0"/></path><path stroke-dasharray="14" stroke-dashoffset="14" d="M18.5 20l-9.5 -6.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.3s" to="0"/></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M2 12.5l7 1"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.3s" to="0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M12 16l-3 3M9 13.5l0 5.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.3s" to="0"/></path></g></svg></span>
+               }
+            </button>
           </div>
          )}
 
@@ -257,6 +262,10 @@ export const SubjectSetting = () => {
 
           </div>
          ))}
+        </div>
+
+        <div className='fixed bottom-5 right-2'>
+          <button className='bg-blue-500 w-10 h-10 p-2 rounded-full text-white' onClick={bottom}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="16" d="M12 5l0 13.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="16;0"/></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M12 19l5 -5M12 19l-5 -5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.3s" dur="0.2s" to="0"/></path></g></svg></button>
         </div>
       </section>
     </div>
