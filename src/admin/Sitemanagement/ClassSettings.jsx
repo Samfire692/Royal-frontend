@@ -13,6 +13,8 @@ export const ClassSettings = () => {
    const [classSubjects, setClasssubject] = useState([])
    const [search, setSearch] = useState("");
    const [activeClasssub, setActiveclassSub] = useState(false)
+   const [menu, setMenu] = useState(null);
+   const [delLoading, setDelloading] = useState(false);
 
    const sendClasses = async (e) => {
       e.preventDefault();
@@ -116,7 +118,55 @@ export const ClassSettings = () => {
     }
   }
 
+    const delClass = async(id)=> {
+      const delResult= await Swal.fire({
+        icon:"question",
+        title:"Are you sure ?",
+        text:"You wont be able to revert this!",
+        showCancelButton:true,
+        confirmButtonText:"Delete",
+        confirmButtonColor:"#d33",
+        cancelButtonText:"No, wait",
+        cancelButtonColor:"#3085d6"
+      })
 
+      if(delResult.isConfirmed){
+        try{
+          setDelloading(id)
+          const {error} = await supabase
+          .from("royalclassrooms")
+          .delete()
+          .eq("id",id)
+        
+        if(error) throw error;
+
+        Swal.fire({
+          icon:"success",
+          title:"Successful",
+          text:"Deleted successfully"
+        })
+
+      }catch(error){
+        if(error.message.includes("Fetch")){
+          Swal.fire({
+            icon:"error",
+            title:"Error",
+            text:"No Internet Connection"
+          })
+        }else{
+          Swal.fire({
+            icon:"error",
+            title:"Error",
+            text:error.message
+          })
+        }
+      }finally{
+        setDelloading(false)
+        fetchClasses()
+      }
+    }
+
+  }
 
   useEffect(() => {
     fetchClasses()
@@ -221,13 +271,19 @@ export const ClassSettings = () => {
           {classesArray.map((item) => (
             <div key={item.id} className='p-2 shadow rounded-2xl'>
              <div className='flex justify-between'>
-               <div className='flex gap-1'>
-                <p className='capitalize text-blue-600 font-bold'>{item.class_name}</p>
-                <button className='mt-0.5 text-slate-400' onClick={()=>setActiveclassSub(activeClasssub === item.id ? " " : item.id)}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16l-7 -7M12 16l7 -7"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="12;0"/></path></svg></button>
-               </div>
-                
-               <button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="M10.5 5A1.5 1.5 0 0 1 12 3.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm0 7a1.5 1.5 0 0 1 1.5-1.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm1.5 5.5a1.5 1.5 0 0 0-1.5 1.5v.01a1.5 1.5 0 0 0 1.5 1.5h.01a1.5 1.5 0 0 0 1.5-1.5V19a1.5 1.5 0 0 0-1.5-1.5z" clip-rule="evenodd"/></svg></button>
+              <p className='capitalize text-blue-600 font-bold cursor-pointer' onClick={()=>setActiveclassSub(activeClasssub === item.id ? "" : item.id)}>{item.class_name}</p>
+              <button onClick={()=> setMenu(menu === item.id ? "" : item.id)}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="M10.5 5A1.5 1.5 0 0 1 12 3.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm0 7a1.5 1.5 0 0 1 1.5-1.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm1.5 5.5a1.5 1.5 0 0 0-1.5 1.5v.01a1.5 1.5 0 0 0 1.5 1.5h.01a1.5 1.5 0 0 0 1.5-1.5V19a1.5 1.5 0 0 0-1.5-1.5z" clip-rule="evenodd"/></svg></button>
              </div>
+            
+             {menu === item.id && (
+             <div className='flex justify-end'>
+              <div className='grid gap-1 w-20 shadow-sm shadow-slate-500/40 rounded p-1 absolute bg-white'>
+               <button className='text-blue-600'>Edit</button><hr className='text-slate-400'/>
+
+               <button className='text-red-600' onClick={()=> delClass(item.id)}>{delLoading === item.id ? <span className='flex justify-center pt-1'><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><g><circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity="0.14" /><circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity="0.29" /><circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity="0.43" /><circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity="0.57" /><circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity="0.71" /><circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity="0.86" /><circle cx="12" cy="21.5" r="1.5" fill="currentColor" /><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" /></g></svg></span> : "Delete"}</button>
+             </div>
+             </div>
+             )}
 
               {activeClasssub === item.id && (
                 <div className='flex flex-wrap gap-3 mt-2.5 ps-2 transition-all'>
