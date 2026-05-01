@@ -15,6 +15,10 @@ export const ClassSettings = () => {
    const [activeClasssub, setActiveclassSub] = useState(false)
    const [menu, setMenu] = useState(null);
    const [delLoading, setDelloading] = useState(false);
+   const [editMenu, setEditmenu] = useState(null);
+   const [newClass, setNewclass] = useState("");
+   const [editLoading, setEditloading]= useState(null);
+   const [loading, setLoading] = useState(true);
 
    const sendClasses = async (e) => {
       e.preventDefault();
@@ -97,6 +101,7 @@ export const ClassSettings = () => {
 
      if (error) throw error
      setClassesarray(data);
+     setLoading(false);
 
     } catch (error) {
       console.error("Error fetching classes:", error.message)
@@ -168,6 +173,58 @@ export const ClassSettings = () => {
 
   }
 
+  const editClass = async (id)=> {
+    const editResult = await Swal.fire({
+      icon:"question",
+        title:"Are you sure ?",
+        text:"You wont be able to revert this!",
+        showCancelButton:true,
+        confirmButtonText:"Update",
+        confirmButtonColor:"blue",
+        cancelButtonText:"No, wait",
+        cancelButtonColor:"#3085d6"
+    })
+
+    if(editResult.isConfirmed){
+      try{
+       setEditloading(id)
+       const {error}= await supabase
+       .from("royalclassrooms")
+       .update({
+        class_name:newClass
+       })
+       .eq("id", id)
+
+       if(error) throw error
+       Swal.fire({
+        icon:"success",
+        title:"Successful",
+        text:"Updated successfully"
+       })
+
+       setEditmenu(false)
+       setMenu(false);
+      }catch(error){
+        if(error.message.includes("Fetch")){
+          Swal.fire({
+            icon:"error",
+            title:"Error",
+            text:"No Internet connection !"
+          })
+        }else{
+          Swal.fire({
+            icon:"error",
+            title:"Error",
+            text:error.message
+          })
+        }
+      }finally{
+        fetchClasses()
+        setEditloading(false)
+      }
+    }
+  }
+
   useEffect(() => {
     fetchClasses()
     fetchSubjects()
@@ -178,6 +235,15 @@ export const ClassSettings = () => {
   : subjects.filter((item) => 
       item.subject_name.toLowerCase().includes(search.toLowerCase())
     );
+
+    if(loading){
+      return(
+      <div className='h-[50vh] flex flex-col justify-center place-items-center'>
+       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="32" height="32" fill="none" /><g><circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity="0.14" /><circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity="0.29" /><circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity="0.43" /><circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity="0.57" /><circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity="0.71" /><circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity="0.86" /><circle cx="12" cy="21.5" r="1.5" fill="currentColor" /><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" /></g></svg>
+       <p className='mt-2'>Fetching Classes . . .</p>
+      </div>
+      )
+    }
 
   return (
     <div>
@@ -272,16 +338,28 @@ export const ClassSettings = () => {
             <div key={item.id} className='p-2 shadow rounded-2xl'>
              <div className='flex justify-between'>
               <p className='capitalize text-blue-600 font-bold cursor-pointer' onClick={()=>setActiveclassSub(activeClasssub === item.id ? "" : item.id)}>{item.class_name}</p>
-              <button onClick={()=> setMenu(menu === item.id ? "" : item.id)}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="M10.5 5A1.5 1.5 0 0 1 12 3.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm0 7a1.5 1.5 0 0 1 1.5-1.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm1.5 5.5a1.5 1.5 0 0 0-1.5 1.5v.01a1.5 1.5 0 0 0 1.5 1.5h.01a1.5 1.5 0 0 0 1.5-1.5V19a1.5 1.5 0 0 0-1.5-1.5z" clip-rule="evenodd"/></svg></button>
+              <button className={` ${editMenu === item.id ? "hidden" : null}`} onClick={()=> setMenu(menu === item.id ? "" : item.id)}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><path fill="currentColor" fill-rule="evenodd" d="M10.5 5A1.5 1.5 0 0 1 12 3.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm0 7a1.5 1.5 0 0 1 1.5-1.5h.01a1.5 1.5 0 0 1 1.5 1.5v.01a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5zm1.5 5.5a1.5 1.5 0 0 0-1.5 1.5v.01a1.5 1.5 0 0 0 1.5 1.5h.01a1.5 1.5 0 0 0 1.5-1.5V19a1.5 1.5 0 0 0-1.5-1.5z" clip-rule="evenodd"/></svg></button>
              </div>
             
              {menu === item.id && (
              <div className='flex justify-end'>
-              <div className='grid gap-1 w-20 shadow-sm shadow-slate-500/40 rounded p-1 absolute bg-white'>
-               <button className='text-blue-600'>Edit</button><hr className='text-slate-400'/>
+              <div className={`grid gap-1 w-20 shadow-sm shadow-slate-500/40 rounded p-1 absolute bg-white ${editMenu === item.id ? "hidden" : null}`}>
+               <button className='text-blue-600' onClick={()=> setEditmenu(editMenu === item.id ? " " : item.id)}>Edit</button><hr className='text-slate-400'/>
 
                <button className='text-red-600' onClick={()=> delClass(item.id)}>{delLoading === item.id ? <span className='flex justify-center pt-1'><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><g><circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity="0.14" /><circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity="0.29" /><circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity="0.43" /><circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity="0.57" /><circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity="0.71" /><circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity="0.86" /><circle cx="12" cy="21.5" r="1.5" fill="currentColor" /><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" /></g></svg></span> : "Delete"}</button>
              </div>
+             </div>
+             )}
+
+             {editMenu === item.id && (
+              <div className='flex mt-2 gap-2'>
+              <input type="text" className='border w-full h-11 p-3' defaultValue={item.class_name} onChange={(e)=> setNewclass(e.target.value)}/>
+              <button className='bg-blue-600 w-12 h-9 text-white rounded my-auto' onClick={()=> editClass(item.id)}>{editLoading === item.id 
+              ?
+              <span className='flex justify-center'><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><g><circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity="0.14" /><circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity="0.29" /><circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity="0.43" /><circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity="0.57" /><circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity="0.71" /><circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity="0.86" /><circle cx="12" cy="21.5" r="1.5" fill="currentColor" /><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" /></g></svg></span>
+              : 
+              <span className='flex justify-center'><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="18" d="M21 5l-2.5 15M21 5l-12 8.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="18;0"/></path><path stroke-dasharray="24" d="M21 5l-19 7.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0"/></path><path stroke-dasharray="14" stroke-dashoffset="14" d="M18.5 20l-9.5 -6.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.3s" to="0"/></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M2 12.5l7 1"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.3s" to="0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M12 16l-3 3M9 13.5l0 5.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.3s" to="0"/></path></g></svg></span> 
+             }</button>
              </div>
              )}
 
