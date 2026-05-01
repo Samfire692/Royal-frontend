@@ -313,7 +313,6 @@ export const ClassSettings = () => {
                   className='text-red-500 font-bold'
                   onClick={() => setClasssubject(classSubjects.filter(s => s.id !== item.id))}
                 >
-                  ×
                 </button>
               </div>
             ))}
