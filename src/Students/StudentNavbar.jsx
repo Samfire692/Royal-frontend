@@ -19,11 +19,6 @@ export const StudentNavbar = () => {
        
              <div className='flex flex-col gap-4 w-full'>
 
-              <NavLink to="/" className={linkClasses}>
-                <FaHome className='text-2xl min-w-7.5px' />
-                <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Home</span>
-              </NavLink>
-
                <NavLink to="/student/dashboard" className={linkClasses}>
                  <FaTachometerAlt className='text-2xl min-w-7.5px' />
                  <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Dashboard</span>
@@ -34,24 +29,14 @@ export const StudentNavbar = () => {
                  <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Profile</span>
                </NavLink>
        
-               <NavLink to="/student/sitemanagement" className={linkClasses}>
-                 <FaGlobe className='text-2xl min-w-7.5px' />
-                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Site Management</span>
-               </NavLink>
-       
                <NavLink to="/student/promotion" className={linkClasses}>
                  <FaArrowCircleUp className='text-2xl min-w-7.5px' />
-                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Promotion</span>
+                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>View Result</span>
                </NavLink>
        
                <NavLink to="/student/announcementboard" className={linkClasses}>
                  <FaBullhorn className='text-2xl min-w-7.5px' />
                  <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Announcement</span>
-               </NavLink>
-       
-               <NavLink to="/student/signin" className={linkClasses}>
-                 <FaUserPlus className='text-2xl min-w-7.5px' />
-                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Sign In</span>
                </NavLink>
        
                <NavLink to="/login" className='flex items-center gap-3 w-full px-3 py-2 mt-20 text-red-100 hover:bg-red-600 rounded-lg transition-all'>

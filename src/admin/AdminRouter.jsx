@@ -14,6 +14,9 @@ import { Search } from './Search'
 import { Login } from './Login'
 import { AdminForm } from './AdminForm'
 import { Navigate } from 'react-router-dom'
+import { AdminList } from './Dashboard/AdminList'
+import { TeacherList } from './Dashboard/TeacherList'
+import { Studentlist } from './Dashboard/Studentlist'
 
 export const AdminRouter = () => {
   const [navbar, setNavbar] = useState(false)
@@ -68,10 +71,13 @@ export const AdminRouter = () => {
         <Route path='promotion' element={<Promotion />} />
         <Route path='announcementboard' element={<AdminAnnouncementBoard />} />
         <Route path='signin' element={<AdminSignin />} />
+        <Route path='adminlist' element={<AdminList/>}/>
+        <Route path='teacherlist' element={<TeacherList/>}/>
+        <Route path='studentlist' element={<Studentlist/>}/>
       </Route>
 
       {/* OUTSIDE THE LAYOUT: Signup page */}
-      <Route path='/admin/login' element={<Login />} />
+      <Route path='/admin/' element={<Login />} />
       <Route path='/admin/signup' element={<Signup />} />
       <Route path='/admin/form' element={<AdminForm/>}/>
     </Routes>

@@ -3,69 +3,69 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import Swal from 'sweetalert2';
 
-export const ProfilePassword = () => {
+export const StuPassword = () => {
 
-  const [btnSpinner, setBtnspinner]= useState(false);
-  const [oldPassword, setOldpassword]= useState("");
-  const [newPassword, setNewpassword]= useState("");
-  const [confirmPassword, setConfirmpassword]= useState("");
-
-  const passwordEdit = async (e) => {
-  e.preventDefault();
-  setBtnspinner(true);
-
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: oldPassword,
-    });
-
-    if (authError) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Incorrect old password",
+   const [btnSpinner, setBtnspinner]= useState(false);
+    const [oldPassword, setOldpassword]= useState("");
+    const [newPassword, setNewpassword]= useState("");
+    const [confirmPassword, setConfirmpassword]= useState("");
+  
+    const passwordEdit = async (e) => {
+    e.preventDefault();
+    setBtnspinner(true);
+  
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: oldPassword,
       });
-      setBtnspinner(false);
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "New passwords do not match!",
+  
+      if (authError) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Incorrect old password",
+        });
+        setBtnspinner(false);
+        return;
+      }
+  
+      if (newPassword !== confirmPassword) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "New passwords do not match!",
+        });
+        setBtnspinner(false);
+        return;
+      }
+  
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
       });
-      setBtnspinner(false);
-      return;
-    }
-
-    const { error: updateError } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-
-    if (updateError) {
-      Swal.fire({
-        icon: "error",
-        title: "Update Failed",
-        text: updateError.message,
-      });
-    } else {
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Password updated successfully!",
-      });
-      setOldpassword("");
-      setNewpassword("");
-      setConfirmpassword("");
-    }
-    }  finally {
-     setBtnspinner(false);
-     }
-    };
+  
+      if (updateError) {
+        Swal.fire({
+          icon: "error",
+          title: "Update Failed",
+          text: updateError.message,
+        });
+      } else {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Password updated successfully!",
+        });
+        setOldpassword("");
+        setNewpassword("");
+        setConfirmpassword("");
+      }
+      }  finally {
+       setBtnspinner(false);
+       }
+      };
   return (
     <div>
       <h2 className='mt-2 font-bold text-xl text-blue-600'>Update Password</h2>

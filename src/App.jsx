@@ -8,6 +8,7 @@ import { StudentRouter } from './Students/StudentRouter';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { useLocation } from 'react-router-dom';
+import { TeachRouter } from './teachers/TeachRouter';
 
 
 
@@ -30,6 +31,7 @@ function App() {
       <Router/>
       <AdminRouter/>
       <StudentRouter/>
+      <TeachRouter/>
       {/* <Footer/> */}
      
     </div>

@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import { User } from 'lucide-react'
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -19,9 +20,10 @@ export const Login = () => {
 
     const {data:dbData, error:dbError} = await supabase 
     .from("adminsignup")
-    .select("email")
+    .select("email, status")
     .eq("special_id", Id)
     .single();
+
 
     if(!dbData || dbError){
       Swal.fire({
@@ -32,10 +34,21 @@ export const Login = () => {
      setLoading(false);
     }
 
+    if (dbData.status === 'blocked') {
+     Swal.fire({
+        icon: "error",
+        title: "Admin Blocked",
+        text: "This Admin account has been restricted. Contact the Super Admin!"
+    });
+    setLoading(false);
+    return;
+    }
+
     const {data:authData, error:authError} = await supabase.auth.signInWithPassword({
       email:dbData.email,
       password:password
     })
+
 
     if(authError){
       Swal.fire({

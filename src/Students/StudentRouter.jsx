@@ -57,7 +57,7 @@ export const StudentRouter = () => {
             <Outlet context={{ user }}/>
           </div>
 
-                </div>
+            </div>
             }>
              <Route path='dashboard' element={<StudentDashboard/>}/>
              <Route path='profile' element={<StudentProfile/>}/>

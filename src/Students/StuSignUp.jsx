@@ -17,8 +17,9 @@ export const StuSignUp = () => {
    
        const firstname = fullname.trim().split(/\s+/)[0].toUpperCase();
        const randomDigits = Math.floor(1000 + Math.random() * 9000);
+       const emailrandomDigits = Math.floor(100 + Math.random() * 900);
        const specialId = `STUD_${firstname}_${randomDigits}`;
-       const email = `${firstname.toLowerCase()}@gmail.com`;
+       const email = `${firstname.toLowerCase()}${emailrandomDigits}@gmail.com`;
        const password = "STUDENT_0000"
    
        const {data:authData, error:authError} = await supabase.auth.signUp({
