@@ -20,7 +20,7 @@ export const Login = () => {
 
     const {data:dbData, error:dbError} = await supabase 
     .from("adminsignup")
-    .select("email, status")
+    .select("email, status, full_name")
     .eq("special_id", Id)
     .single();
 
@@ -46,7 +46,7 @@ export const Login = () => {
 
     const {data:authData, error:authError} = await supabase.auth.signInWithPassword({
       email:dbData.email,
-      password:password
+      password:password,
     })
 
 
@@ -61,7 +61,8 @@ export const Login = () => {
     }else{
       const AdminProfile = {
         id:authData.user.id,
-        email:dbData.email
+        email:dbData.email,
+        full_name: dbData.full_name
       }
 
       localStorage.setItem("AdminProfile", JSON.stringify(AdminProfile));

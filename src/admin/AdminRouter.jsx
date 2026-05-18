@@ -10,13 +10,14 @@ import { AdminSignin } from './AdminSignin'
 import { AdminAnnouncementBoard } from './AdminAnnouncementBoard'
 import { Signup } from './Signup'
 import { FaBars, FaTimes, FaSearch, FaBell } from 'react-icons/fa'
-import { Search } from './Search'
 import { Login } from './Login'
 import { AdminForm } from './AdminForm'
 import { Navigate } from 'react-router-dom'
 import { AdminList } from './Dashboard/AdminList'
 import { TeacherList } from './Dashboard/TeacherList'
 import { Studentlist } from './Dashboard/Studentlist'
+import { Search } from '../Search'
+import { AdminNotifications } from './AdminNotifications'
 
 export const AdminRouter = () => {
   const [navbar, setNavbar] = useState(false)
@@ -40,25 +41,19 @@ export const AdminRouter = () => {
             )}
           </div>
 
-          <div className='p-2 flex w-screen justify-between border border-b-slate-400 border-t-0 border-r-0 border-l-0'>
+          <div className='p-2 flex lg:block w-screen justify-between'>
             <div>
-              <button className='border rounded-xl text-xl text-black p-1.5 lg:hidden mt-3' onClick={() => setNavbar(true)}><FaBars /></button>
+              <button className='border rounded-xl text-xl text-black p-1.5 lg:hidden mt-2' onClick={() => setNavbar(true)}><FaBars /></button>
             </div>
 
-            <div>
-              {/* Space for center content if needed */}
-            </div>
 
-            <div className='flex justify-around gap-1.5 px-2'>
-              <Search />
-              <Link to="#">
-                <button className='bg-slate-300 p-2.5 rounded-full mt-2 h-11 w-11'><FaBell className='text-2xl' /></button>
-              </Link>
+            <div className='flex justify-end'>
+             <Search/>
             </div>
 
           </div>
 
-          <div className='px-2 lg:mx-20 pt-2 lg:w-[93vw] w-full'>
+          <div className='px-2 lg:mx-20 lg:w-[93vw] w-full'>
             {/* CHILD PAGES LOAD HERE */}
             <Outlet />
           </div>
@@ -80,6 +75,7 @@ export const AdminRouter = () => {
       <Route path='/admin/' element={<Login />} />
       <Route path='/admin/signup' element={<Signup />} />
       <Route path='/admin/form' element={<AdminForm/>}/>
+      <Route path='/admin/notification' element={<AdminNotifications/>}/>
     </Routes>
   )
 }

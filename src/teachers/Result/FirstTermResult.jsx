@@ -2,153 +2,320 @@ import React, { useEffect, useState } from 'react'
 import { supabase } from '../../supabaseClient';
 import Swal from 'sweetalert2';
 import profilepic from '../../assets/Images/admin profile pic.jfif'
-import { FaGraduationCap , FaFile, FaPlus} from 'react-icons/fa';
+import { FaGraduationCap, FaFile, FaEdit, FaTrash, FaSpinner } from 'react-icons/fa';
 
 export const FirstTermResult = () => {
 
-    const [studentArray, setStudentarray]= useState([]);
-    const [classArray, setClassarray]= useState([]);
-    const [add, setAdd] = useState(false);
+    const [studentArray, setStudentarray] = useState([]);
+    const [classArray, setClassarray] = useState([]);
+    const [add, setAdd] = useState(""); 
     const [selectedClass, setSelectedClass] = useState(null);
-    const [selectedSubject, setSelectedSubject] = useState(null);
+    const [selectedSubject, setSelectedSubject] = useState(null); 
     const [scores, setScores] = useState({});
+    const [selectedSubjectId, setSelectedSubjectId] = useState(null); 
+    const [results, setResults] = useState([]);
+    const [viewResults, setViewresults] = useState("");
+    const [loading, setLoading] = useState(false); 
 
-   const fetchStudents = async (classId) => {
-  if (!classId) return;
-  try {
-    const { data, error } = await supabase
-      .from("studentsignup")
-      .select("*")
-      .eq("class_id", classId) // ONLY get students for this class!
-      .order("full_name", { ascending: true });
+    // --- HELPER: GET CURRENT SESSION ---
+    const getAutoSession = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        return now.getMonth() >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
+    };
 
-    if (error) throw error;
-    console.log("Students found:", data)
-    setStudentarray(data);
-  } catch (error) {
-    Swal.fire("Error", error.message, "error");
-  }
-};
+    // --- FETCHING DATA FUNCTIONS ---
+    const fetchStudents = async (classId) => {
+        if (!classId) return;
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from("studentsignup")
+                .select("*")
+                .eq("class_id", classId)
+                .order("full_name", { ascending: true });
 
-       const fetchClasses = async()=>{
+            if (error) throw error;
+            setStudentarray(data);
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchClasses = async () => {
         const user = JSON.parse(localStorage.getItem('TeacherProfile'));
         const currentTeacherId = user?.id;
-
-        console.log("Searching for Teacher ID:", currentTeacherId);
-
-        // console.log("What is in storage?", localStorage.getItem('TeacherProfile'));
-
-        if(!currentTeacherId) return;
-        try{
-          const {data, error} = await supabase
-          .from("teacherchooseSubject")
-          .select(`
-           id, class_id, subject_id,royalclassrooms(class_name),subjects(subject_name)`) 
-          .eq('teacher_id', currentTeacherId)
-    
-          if(error) throw error;
-          setClassarray(data);
-        }catch(error){
-          if(error.message.includes("Fetch")){
-            Swal.fire({
-              icon:"error",
-              title:"Connection Lost",
-              text:"No Internet Connection !"
-            })
-          }else{
-            Swal.fire({
-              icon:"error",
-              title:"Error",
-              text:error.message
-            })
-          }
-        }finally{
-    
+        if (!currentTeacherId) return;
+        try {
+            const { data, error } = await supabase
+                .from("teacherchooseSubject")
+                .select(`id, class_id, subject_id, royalclassrooms(class_name), subjects(subject_name)`)
+                .eq('teacher_id', currentTeacherId);
+            if (error) throw error;
+            setClassarray(data);
+        } catch (error) {
+            console.error(error.message);
         }
-      }
+    };
 
-      useEffect(()=> {
-        fetchClasses();
-      }, [])
-  return (
-   <div>
-      <div className=''>
-        <h2 className='text-xl font-bold'>First Term</h2>
-      </div><hr className='w-23'/>
+    const fetchResults = async() => {
+        try {
+            const { data, error } = await supabase.from("student_results").select("*");
+            if(error) throw error;
+            setResults(data);
+        } catch(error) {
+            console.error(error.message);
+        }
+    };
 
-      <div className='mt-2 px-2'>
-          <h2 className='uppercase font-bold mb-2'>Choose Classes & Subjects</h2>
-           <div className='flex gap-3'>
-            {classArray.map((items)=> (
-              <div key={items.id} className='grid'>
-                <small className='font-bold uppercase text-slate-400 italic mx-auto'>{items.royalclassrooms?.class_name}</small>
-               <button onClick={() => {
-                setSelectedClass(items.class_id);
-                setSelectedSubject(items.subjects?.subject_name);
-                fetchStudents(items.class_id); // Pass the class_id here!
-                }} className={`border px-3 h-9 mt-1 rounded-xl transition-all ${selectedClass === items.class_id ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 text-slate-400'
-                }`}>{items.subjects?.subject_name} </button>
-              </div>
-            ))}
-           </div>
-      </div>
+    // --- CORE OPERATIONS ---
 
-      <div className='mt-5 flex gap-2 flex-col pb-6 lg:pe-3'>
-        <div className='bg-slate-100 p-2 my-2 rounded text-xs font-mono'>
-  <p>Locked Class ID: {selectedClass || "None"}</p>
-  <p>Locked Subject: {selectedSubject || "None"}</p>
-</div>
-        {studentArray.map((item)=> (
-          <div key={item.id} className='shadow-sm shadow-slate-500/60 p-2 rounded-xl'>
-            <div className='flex justify-between gap-3'>
-            <div className='flex gap-4 w-md justify-between'>
-              <img src={item.profile_pic_url || profilepic } className='w-12 h-12 rounded-full' alt="" />
-              <span className='my-auto text-blue-500 font-semibold'>{item.full_name}</span>
-              <small className='text-slate-400 my-auto'>{item.special_id}</small>
-            </div>
+    // 1. UPLOAD RESULT
+    const handleUpload = async (studentId) => {
+        const user = JSON.parse(localStorage.getItem('TeacherProfile'));
+        const teacherId = user?.id;
+        const testScore = scores[`${studentId}_test`];
+        const examScore = scores[`${studentId}_exam`];
+        const autoSession = getAutoSession();
+        const total = Number(testScore) + Number(examScore);
+
+        if (!selectedSubjectId) return Swal.fire("Wait", "Select a subject first!", "warning");
+        if (!testScore || !examScore) return Swal.fire("Wait", "Enter both scores", "warning");
+
+        const existing = results.find(r => r.student_id === studentId && r.subject_id === selectedSubjectId && r.session === autoSession);
+        if (existing) return Swal.fire("Denied", "Result already uploaded for this session!", "error");
+
+        setLoading(true); // Start Spinner
+        try {
+            const { error } = await supabase
+                .from("student_results") 
+                .insert([{
+                    student_id: studentId,
+                    teacher_id: teacherId,
+                    class_id: selectedClass,
+                    subject_id: selectedSubjectId, 
+                    test_score: Number(testScore),
+                    exam_score: Number(examScore),
+                    term: "First Term",
+                    session: autoSession,
+                    total_score: total
+                }]);
+
+            if (error) throw error;
+            Swal.fire("Success", `Result uploaded!`, "success");
+            setAdd(""); 
+            await fetchResults();
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        } finally {
+            setLoading(false); // Stop Spinner
+        }
+    };
+
+    // 2. DELETE RESULT
+    const handleDelete = async (resultId) => {
+        const confirm = await Swal.fire({
+            title: 'Are you sure?',
+            text: "This result will be deleted permanently!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (confirm.isConfirmed) {
+            setLoading(true); // Start Spinner
+            try {
+                const { error } = await supabase.from("student_results").delete().eq("id", resultId);
+                if (error) throw error;
+                Swal.fire("Deleted", "Result removed", "success");
+                await fetchResults();
+            } catch (error) {
+                Swal.fire("Error", error.message, "error");
+            } finally {
+                setLoading(false); // Stop Spinner
+            }
+        }
+    };
+
+    // 3. EDIT RESULT
+    const handleEdit = async (result) => {
+        const { value: formValues } = await Swal.fire({
+            title: 'Edit Result',
+            html:
+                `<input id="swal-input1" class="swal2-input" type="number" placeholder="Test" value="${result.test_score}">` +
+                `<input id="swal-input2" class="swal2-input" type="number" placeholder="Exam" value="${result.exam_score}">`,
+            focusConfirm: false,
+            preConfirm: () => {
+                return [
+                    document.getElementById('swal-input1').value,
+                    document.getElementById('swal-input2').value
+                ]
+            }
+        });
+
+        if (formValues) {
+            const [newTest, newExam] = formValues;
+            setLoading(true); // Start Spinner
+            try {
+                const { error } = await supabase
+                    .from("student_results")
+                    .update({ 
+                        test_score: Number(newTest), 
+                        exam_score: Number(newExam), 
+                        total_score: Number(newTest) + Number(newExam) 
+                    })
+                    .eq("id", result.id);
+
+                if (error) throw error;
+                Swal.fire("Updated", "Scores modified successfully", "success");
+                await fetchResults();
+            } catch (error) {
+                Swal.fire("Error", error.message, "error");
+            } finally {
+                setLoading(false); // Stop Spinner
+            }
+        }
+    };
+
+    useEffect(() => { fetchClasses(); fetchResults(); }, []);
+
+    return (
+        <div className="relative">
+            {/* GLOBAL SPINNER OVERLAY */}
+            {loading && (
+                <div className='fixed inset-0 bg-white/60 z-9999 flex items-center justify-center backdrop-blur-[1px]'>
+                    <div className='flex flex-col items-center gap-2'>
+                        <FaSpinner className='animate-spin text-blue-600' size={45} />
+                        <span className='font-bold text-blue-600 animate-pulse'>Processing...</span>
+                    </div>
+                </div>
+            )}
 
             <div>
-                <button className='text-slate-400' onClick={()=> setAdd(add === item.id ? "" : item.id)}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" stroke-dasharray="16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M5 12h14"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="16;0"/></path><path stroke-dashoffset="16" d="M12 5v14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.5s" to="0"/></path></g></svg></button>
+                <h2 className='text-xl font-bold'>First Term</h2>
+            </div><hr className='w-23' />
+
+            <div className='mt-2 px-2'>
+                <h2 className='uppercase font-bold mb-2 text-sm text-slate-500'>Choose Classes & Subjects</h2>
+                <div className='flex gap-3 overflow-x-auto pb-2'>
+                    {classArray.map((items) => (
+                        <div key={items.id} className='grid'>
+                            <small className='font-bold uppercase text-slate-400 italic mx-auto text-[10px]'>{items.royalclassrooms?.class_name}</small>
+                            <button onClick={() => {
+                                setSelectedClass(items.class_id);
+                                setSelectedSubject(items.subjects?.subject_name); 
+                                setSelectedSubjectId(items.subject_id); 
+                                fetchStudents(items.class_id);
+                            }} className={`border px-3 h-9 mt-1 rounded-xl transition-all whitespace-nowrap ${selectedClass === items.class_id && selectedSubjectId === items.subject_id ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 text-slate-400'
+                                }`}>{items.subjects?.subject_name} </button>
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            <div className='mt-5 flex gap-2 flex-col pb-6 lg:pe-3'>
+                {studentArray.map((item) => (
+                    <div key={item.id} className='shadow-sm shadow-slate-500/60 p-2 rounded-xl bg-white'>
+                        <div className='flex justify-between gap-3'>
+                            <div className='flex gap-4 w-md justify-between'>
+                                <img src={item.profile_pic_url || profilepic} className='w-12 h-12 rounded-full' alt="" />
+                                <span className='my-auto text-blue-500 font-semibold'>{item.full_name}</span>
+                                <small className='text-slate-400 my-auto'>{item.special_id}</small>
+                            </div>
+                            <div>
+                                <button className='text-slate-400 hover:text-blue-500' onClick={() => setAdd(add === item.id ? "" : item.id)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><g fill="none" stroke="currentColor" stroke-dasharray="16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M5 12h14"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="16;0" /></path><path stroke-dashoffset="16" d="M12 5v14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.5s" to="0" /></path></g></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                       {add === item.id && (
+                            <form className='mt-2 border-t pt-3'>
+                                <div className='flex flex-col gap-4'>
+                                    <div className='flex gap-4 items-center'>
+                                        <div className='bg-blue-50 p-2 rounded-lg'>
+                                            <p className='text-[10px] font-bold text-blue-400 uppercase'>Subject</p>
+                                            <p className='font-bold text-slate-700 text-sm'>{selectedSubject || "Pick a Subject"}</p>
+                                        </div>
+
+                                        <div className='flex gap-4'>
+                                            <div>
+                                                <label className='text-[10px] font-bold block text-slate-500'>TEST (40):</label>
+                                                <input
+                                                    type="number"
+                                                    className='border h-8 text-center rounded w-12 outline-none'
+                                                    onChange={(e) => setScores({ ...scores, [`${item.id}_test`]: e.target.value })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className='text-[10px] font-bold block text-slate-500'>EXAM (60):</label>
+                                                <input
+                                                    type="number"
+                                                    className='border h-8 text-center rounded w-12 outline-none'
+                                                    onChange={(e) => setScores({ ...scores, [`${item.id}_exam`]: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className='bg-slate-50 p-2 rounded-lg border border-slate-100'>
+                                            <p className='text-[9px] font-bold text-slate-400 uppercase'>Session</p>
+                                            <p className='font-bold text-slate-500 text-[11px]'>{item.session || "2025/2026"}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className='flex justify-end mt-3'>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleUpload(item.id)}
+                                        className='bg-blue-500 px-6 h-10 text-white rounded-xl font-bold active:scale-95 transition-all'
+                                    >
+                                        Submit Score
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        <div className='md:me-4 py-2 px-1 shadow-sm mt-2 rounded-xl bg-slate-200/50'>
+                            <div className='flex gap-2 text-slate-400 justify-around'>
+                                <button className='mb-1 flex font-bold py-1 gap-1 text-xs'><FaGraduationCap size={18} className='my-auto' /> View Profile</button>
+                                <button className='mb-1 flex font-bold py-1 gap-1 text-xs'  onClick={()=> setViewresults(viewResults === item.id ? " " : item.id)}
+                                    ><FaFile size={16} className='my-auto'/>View Results</button>
+                            </div>
+                        </div>
+
+                         {viewResults === item.id && (
+                            <div>
+                                <h2 className='text-slate-400 font-bold my-2'>Result History</h2>
+                            <div className='flex flex-col gap-2'>
+                              {results.filter(result=> result.student_id === item.id && result.subject_id === selectedSubjectId).map((res)=> (
+                               <div key={res.id} className='flex gap-2.5 justify-around border-b border-b-slate-300 p-2 items-center'>
+                                 <small className='my-auto font-bold text-slate-400'>{res.session}</small>
+                                 
+                                 <div className='flex-col flex'>
+                                     <label className='text-[10px] font-bold text-center text-slate-400'>TEST</label>
+                                     <p className={`text-center font-bold text-xl ${res.test_score < 20 ? 'text-red-500' : 'text-blue-600'}`}>{res.test_score}</p>
+                                 </div>
+
+                                  <div className='flex-col flex'>
+                                     <label className='text-[10px] font-bold text-center text-slate-400'>EXAM</label>
+                                     <p className={`text-center font-bold text-xl ${res.exam_score < 30 ? 'text-red-500' : 'text-blue-700'}`}>{res.exam_score}</p>
+                                 </div>
+
+                                 <div className='flex gap-3 p-2'>
+                                    <button onClick={() => handleEdit(res)} className='text-blue-400 hover:text-blue-600 flex gap-1 mx-auto'><FaEdit className='my-1'/> Edit</button>
+                                    <button onClick={() => handleDelete(res.id)} className='text-red-400 hover:text-red-600 flex gap-1 mx-auto'><FaTrash className='my-1'/> Delete</button>
+                                 </div>
+                               </div>
+                            ))}
+                          </div>
+                        </div> 
+                    )}
+                    </div>
+                ))}
             </div>
-
-           {add === item.id && (
-            <form className='mt-2'>
-             <div className='flex gap-4'>
-               <div className=''>
-                <label htmlFor="">Subject Test name:</label>
-                <input type="text"  className='border h-8 mx-1 text-center rounded w-10' maxLength={3}/>
-              </div>
-
-              <div className=''>
-                <label htmlFor="">Subject Exam name:</label>
-                <input type="text"  className='border h-8 mx-1 text-center rounded w-10' maxLength={3}/>
-              </div>
-             </div>
-
-             <div className='flex justify-end mt-3'>
-              <button className='bg-blue-500 w-30 h-11 text-white rounded-xl'>Submit</button>
-             </div>
-           </form>
-           )}
-
-           <div className='flex justify-between md:me-4 py-2 shadow-sm mt-2 rounded-xl bg-slate-200/50'>
-               <div className='flex gap-2 text-slate-400 justify-around w-sm'>
-                 <button className='mb-1 flex font-bold py-1 gap-1'><FaGraduationCap size={20} className='my-auto'/> View Profile</button>
-                <button className='mb-1 flex font-bold py-1 gap-1'><FaFile size={18} className='my-auto'/> Results</button>
-               </div>
-
-               <div className='w-30 justify-end flex md:justify-around gap-3 my-auto'>
-               <a href="" className='text-slate-500'><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="66" d="M4 5h16c0.55 0 1 0.45 1 1v12c0 0.55 -0.45 1 -1 1h-16c-0.55 0 -1 -0.45 -1 -1v-12c0 -0.55 0.45 -1 1 -1Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="66;0"/></path><path stroke-dasharray="24" stroke-dashoffset="24" d="M3 6.5l9 5.5l9 -5.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.3s" to="0"/></path></g></svg></a>
-
-               <a href="" className='text-slate-500'><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><path fill="none" stroke="currentColor" stroke-dasharray="62" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="62;0"/></path></svg></a>
-            </div>
-           </div>
-
-          </div>
-        ))}
-      </div>
-
-    </div>
-  )
+        </div>
+    )
 }
