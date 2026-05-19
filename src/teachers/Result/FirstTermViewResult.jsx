@@ -1,152 +1,259 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
-import { FaChevronDown, FaChevronUp, FaUserCircle, FaEdit, FaFileAlt } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaUserCircle, FaEdit, FaFileAlt, FaSave, FaEraser, FaUpload } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+// ✅ Import d signature pad library
+import SignaturePad from 'react-signature-canvas';
 
 export const FirstTermViewResult = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedStudent, setExpandedStudent] = useState(null);
+    const [userId, setUserId] = useState(null);
+    
+    // ✅ Session & Comments State
+    const [currentSession, setCurrentSession] = useState("2025/2026");
+    const [allResults, setAllResults] = useState([]);
+    const [comments, setComments] = useState({});
 
-    const fetchClassStudents = async () => {
+    // ✅ SIGNATURE STATE
+    const sigPad = useRef({}); // A reference to d drawing canvas
+    const [teacherSignature, setTeacherSignature] = useState(null); // Current saved signature URL
+
+    const fetchData = async () => {
         setLoading(true);
         try {
-            // 1. Get the current logged-in Teacher
             const { data: { user } } = await supabase.auth.getUser();
-            
-            // 2. Get the Teacher's assigned class ID
-            const { data: teacherData } = await supabase
+            setUserId(user?.id);
+
+            const { data: teacher } = await supabase
                 .from('teachersignup')
-                .select('assigned_class') 
-                .eq('email', user?.email)
+                .select('assigned_class, signature_url') // ✅ Fetch stored sig
+                .eq('id', user?.id)
                 .single();
 
-            if (teacherData?.assigned_class) {
-                // 3. Fetch students directly from studentsignup where current_class matches the ID
-                const { data: studentData, error } = await supabase
-                    .from('studentsignup') 
-                    .select('*')
-                    .eq('current_class', teacherData.assigned_class); // Matching UUID to UUID
+            // Set d teacher's existing signature if it exists
+            if (teacher?.signature_url) {
+                setTeacherSignature(teacher.signature_url);
+            }
 
-                if (error) throw error;
-                
-                console.log("Teacher Class ID:", teacherData.assigned_class);
-                console.log("Students found:", studentData);
+            if (teacher?.assigned_class) {
+                const { data: studentData } = await supabase
+                    .from('studentsignup')
+                    .select('*')
+                    .eq('current_class', teacher.assigned_class);
+
+                const { data: scores } = await supabase
+                    .from('student_results')
+                    .select('*')
+                    .eq('class_id', teacher.assigned_class)
+                    .eq('session', currentSession)
+                    .eq('term', 'First Term');
 
                 setStudents(studentData || []);
+                setAllResults(scores || []);
             }
         } catch (err) {
-            console.error("Link Error:", err.message);
+            console.error(err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchClassStudents();
-    }, []);
+    useEffect(() => { fetchData(); }, [currentSession]);
 
-    const toggleDropdown = (id) => {
-        setExpandedStudent(expandedStudent === id ? null : id);
+    // ✅ Calculation Logic
+    const getStudentStats = (studentId) => {
+        const studentScores = allResults.filter(r => r.student_id === studentId);
+        if (studentScores.length === 0) return { percentage: "0%", total: 0 };
+        const totalObtained = studentScores.reduce((acc, curr) => acc + (curr.total_score || 0), 0);
+        const maxPossible = studentScores.length * 100;
+        const percentage = ((totalObtained / maxPossible) * 100).toFixed(1);
+        return { percentage: `${percentage}%`, total: totalObtained };
     };
 
-    if (loading) return <p className="p-4 animate-pulse text-slate-500">Loading class list...</p>;
+    // ✅ Save Comment Logic
+    const handleSaveComment = async (studentId) => {
+        const commentText = comments[studentId];
+        if (!commentText) return Swal.fire("Empty", "Write something first", "warning");
+        const { error } = await supabase
+            .from('teacher_comments')
+            .upsert({ 
+                student_id: studentId, 
+                teacher_id: userId, 
+                comment: commentText,
+                term: 'First Term',
+                session: currentSession
+            }, { onConflict: 'student_id, term, session' });
+        if (error) Swal.fire("Error", error.message, "error");
+        else Swal.fire("Saved", "Comment updated", "success");
+    };
+
+    // ✅ --- SIGNATURE LOGIC --- ✅
+
+    const clearSignature = () => {
+        sigPad.current.clear(); // Clears d drawing canvas
+    };
+
+    const saveSignatureToDatabase = async () => {
+        if (sigPad.current.isEmpty()) {
+            return Swal.fire("Empty Signature", "Please sign on d canvas before saving.", "warning");
+        }
+
+        setLoading(true);
+
+        try {
+            // 1. Convert signature on canvas to a base64 image string
+            const signatureImage = sigPad.current.getTrimmedCanvas().toDataURL('image/png');
+            
+            // 2. We could upload this string to Supabase Storage, 
+            // but for simplicity, we will save it directly in d column (it works for smaller images).
+            const { error: updateError } = await supabase
+                .from('teachersignup')
+                .update({ signature_url: signatureImage })
+                .eq('id', userId);
+
+            if (updateError) throw updateError;
+
+            // 3. Update UI state with new signature
+            setTeacherSignature(signatureImage);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Signature Saved',
+                text: 'This signature will now be applied to all results.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+        } catch (error) {
+            console.error('Signature Error:', error.message);
+            Swal.fire("Upload Error", "Could not save signature. Please try again.", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleDropdown = (id) => setExpandedStudent(expandedStudent === id ? null : id);
+
+    if (loading) return <p className="p-4 animate-pulse text-slate-500">Processing data...</p>;
 
     return (
         <div className="flex flex-col gap-4">
-            {students.length === 0 ? (
-                <p className="text-center py-10 text-slate-400 border border-dashed rounded-2xl">No students found in your class.</p>
-            ) : (
-                students.map((student) => (
+            {/* Session Selector */}
+            <div className="flex justify-between items-center bg-white p-4 rounded-2xl border mb-2">
+                <h2 className="font-bold text-slate-700">Class Results</h2>
+                <select 
+                    className="border rounded-lg px-3 py-1 text-sm font-bold text-blue-600 outline-none"
+                    value={currentSession}
+                    onChange={(e) => setCurrentSession(e.target.value)}
+                >
+                    <option value="2024/2025">2024/2025 Session</option>
+                    <option value="2025/2026">2025/2026 Session</option>
+                </select>
+            </div>
+
+            {students.map((student) => {
+                const stats = getStudentStats(student.id);
+                return (
                     <div key={student.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                        
-                        {/* --- STUDENT HEADER --- */}
-                        <div 
-                            className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-all"
-                            onClick={() => toggleDropdown(student.id)}
-                        >
+                        <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50" onClick={() => toggleDropdown(student.id)}>
                             <div className="flex items-center gap-4">
                                 {student.student_img ? (
-                                    <img src={student.student_img} alt="profile" className="w-12 h-12 rounded-full object-cover border" />
+                                    <img src={student.student_img} alt="profile" className="w-12 h-12 rounded-full object-cover border-2 border-blue-100" />
                                 ) : (
                                     <FaUserCircle className="text-4xl text-slate-300" />
                                 )}
                                 <div>
                                     <h3 className="font-bold text-slate-800">{student.full_name}</h3>
-                                    {/* Substituted student.current_class with admission_no to keep info clean */}
-                                    <p className="text-xs text-slate-500 font-semibold">{student.admission_no} | <span className="text-blue-600">ID: {student.id.slice(0, 8)}</span></p>
+                                    <p className="text-xs text-slate-500">{student.admission_no} | <span className="text-blue-600 font-bold">{stats.percentage}</span></p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                {expandedStudent === student.id ? <FaChevronUp /> : <FaChevronDown />}
-                            </div>
+                            {expandedStudent === student.id ? <FaChevronUp /> : <FaChevronDown />}
                         </div>
 
-                        {/* --- DROPDOWN CONTENT --- */}
                         {expandedStudent === student.id && (
                             <div className="p-6 border-t border-slate-100 bg-slate-50/50 space-y-6">
-                                
-                                {/* 1. Result Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                                        <p className="text-[10px] uppercase font-bold text-slate-400">Total Score</p>
-                                        <p className="text-xl font-black text-slate-700">Empty</p> 
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                                        <p className="text-[10px] uppercase font-bold text-slate-400">Aggregated Score</p>
+                                        <p className="text-xl font-black text-slate-700">{stats.total}</p> 
                                     </div>
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                                        <p className="text-[10px] uppercase font-bold text-slate-400">Average</p>
-                                        <p className="text-xl font-black text-blue-600">Empty</p>
-                                    </div>
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                                        <p className="text-[10px] uppercase font-bold text-slate-400">Position</p>
-                                        <p className="text-xl font-black text-orange-500">Empty</p>
-                                    </div>
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                                        <p className="text-[10px] uppercase font-bold text-slate-400">Grade</p>
-                                        <p className="text-xl font-black text-green-600">Empty</p>
+                                    <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                                        <p className="text-[10px] uppercase font-bold text-slate-400">Total Percentage</p>
+                                        <p className="text-xl font-black text-blue-600">{stats.percentage}</p>
                                     </div>
                                 </div>
 
-                                {/* 2. Comments Section */}
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-sm font-bold text-slate-600 flex items-center gap-2">
-                                            <FaEdit /> Class Teacher's Comment
-                                        </label>
-                                        <textarea 
-                                            placeholder="Insert comment here..."
-                                            className="p-3 rounded-xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 h-20"
-                                        ></textarea>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-sm font-bold text-slate-600 flex items-center gap-2">
-                                            <FaFileAlt /> Principal's Remark
-                                        </label>
-                                        <textarea 
-                                            disabled
-                                            placeholder="Principal's comment appears here..."
-                                            className="p-3 rounded-xl border border-slate-200 text-sm bg-slate-100 italic"
-                                        ></textarea>
-                                    </div>
+                                {/* Comments Section */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-600 flex items-center justify-between">
+                                        <span className="flex items-center gap-2"><FaEdit /> Class Teacher's Comment</span>
+                                        <button 
+                                            onClick={() => handleSaveComment(student.id)}
+                                            className="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1 font-bold"
+                                        >
+                                            <FaSave /> SUBMIT
+                                        </button>
+                                    </label>
+                                    <textarea 
+                                        value={comments[student.id] || ""}
+                                        onChange={(e) => setComments({...comments, [student.id]: e.target.value})}
+                                        placeholder="Enter student performance remark..."
+                                        className="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 h-20"
+                                    ></textarea>
                                 </div>
 
-                                {/* 3. Signature & Full Result Button */}
-                                <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200">
-                                    <div className="text-center md:text-left">
-                                        <p className="text-xs font-bold text-slate-400 uppercase mb-2">Teacher's Signature</p>
-                                        <div className="w-40 h-12 border-b-2 border-slate-300 italic text-slate-400 text-sm flex items-end pb-1 px-2">
-                                            Sign here...
+                                {/* ✅ INTERACTIVE SIGNATURE PAD */}
+                                <div className="pt-4 border-t border-slate-200">
+                                    <p className="text-xs font-bold text-slate-400 uppercase mb-3">Teacher's Signature (Required for all results)</p>
+                                    
+                                    <div className="grid md:grid-cols-[1fr,auto] items-end gap-4">
+                                        <div className="bg-white border-2 border-dashed border-slate-200 rounded-xl overflow-hidden shadow-inner flex justify-center items-center">
+                                            {/* ✅ Actual Drawing Canvas */}
+                                            <SignaturePad 
+                                                ref={sigPad} 
+                                                canvasProps={{
+                                                    className: "signatureCanvas w-full h-40",
+                                                    style: { border: 'none', background: 'white' }
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="flex flex-col md:flex-row gap-3">
+                                            <button 
+                                                onClick={clearSignature}
+                                                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-xl font-bold transition-all text-sm"
+                                            >
+                                                <FaEraser /> Clear
+                                            </button>
+                                            <button 
+                                                onClick={saveSignatureToDatabase}
+                                                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all text-sm shadow-md"
+                                            >
+                                                <FaUpload /> Save
+                                            </button>
                                         </div>
                                     </div>
-                                    
-                                    <button className="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-700 transition-all shadow-lg shadow-slate-200">
-                                        Display Full Result
+
+                                    {teacherSignature && (
+                                        <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-3">
+                                            <p className="text-xs font-bold text-blue-700">Saved Signature:</p>
+                                            <img src={teacherSignature} alt="saved signature" className="h-10 border border-slate-200 bg-white" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex justify-center md:justify-end pt-4 border-t border-slate-200">
+                                    <button className="w-full md:w-auto bg-slate-800 text-white px-10 py-3.5 rounded-xl font-bold hover:bg-slate-700 shadow-lg active:scale-95 transition-transform flex items-center gap-2 justify-center">
+                                        View Full Report Sheet
                                     </button>
                                 </div>
                             </div>
                         )}
                     </div>
-                ))
-            )}
+                );
+            })}
         </div>
     );
 };

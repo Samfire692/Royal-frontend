@@ -18,13 +18,19 @@ export const TeachSubject = () => {
     const [requestClass, setRequestClass] = useState("");
     const [requestStatus, setRequestStatus] = useState("none");
     const [finalAssignedClass, setFinalAssignedClass] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // ✅ For button feedback
+    const [isSubmitting, setIsSubmitting] = useState(false); 
+    const [classNamesMap, setClassNamesMap] = useState({}); // ✅ Mapping IDs to Names
 
     const fetchClasses = async () => {
         try {
             const { data, error } = await supabase.from("royalclassrooms").select('*');
             if (error) throw error;
             setClassarray(data);
+
+            // ✅ Store names in a map for easy lookup
+            const mapping = {};
+            data.forEach(c => mapping[c.id] = c.class_name);
+            setClassNamesMap(mapping);
         } catch (error) {
             Swal.fire({ icon: "error", title: "Error", text: error.message });
         }
@@ -65,6 +71,7 @@ export const TeachSubject = () => {
 
             if (data) {
                 setRequestStatus(data.class_teacher_status || "none");
+                // We store the ID in state
                 setRequestClass(data.pending_class_request || "");
                 setFinalAssignedClass(data.assigned_class);
             }
@@ -156,7 +163,6 @@ export const TeachSubject = () => {
         }
     };
 
-    // ✅ UPDATED WITH LOADING FEEDBACK
     const handleClassTeacherRequest = async () => {
         if (!requestClass) return Swal.fire("Wait", "Select a class first", "warning");
 
@@ -165,7 +171,7 @@ export const TeachSubject = () => {
             const { error } = await supabase
                 .from("teachersignup")
                 .update({
-                    pending_class_request: requestClass,
+                    pending_class_request: requestClass, // Sending UUID
                     class_teacher_status: "pending"
                 })
                 .eq("id", userId);
@@ -173,7 +179,7 @@ export const TeachSubject = () => {
             if (error) throw error;
             setRequestStatus("pending");
             setIsClassTeacherMenu(false);
-            Swal.fire("Request Sent", `Admin will review your request for ${requestClass}`, "success");
+            Swal.fire("Request Sent", `Admin will review your request for ${classNamesMap[requestClass]}`, "success");
         } catch (error) {
             Swal.fire("Error", error.message, "error");
         } finally {
@@ -273,12 +279,11 @@ export const TeachSubject = () => {
                         className={`transition-colors duration-300 ${requestStatus === 'approved' ? 'text-blue-600' : 'text-slate-400'}`}
                     >
                         {isClassTeacherMenu || requestStatus === 'approved' || requestStatus === 'pending' ? (
-                            /* ✅ ANIMATED ON SVG */
                             <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="50px" viewBox="0 0 24 24">
                                 <path d="M0 0h24v24H0z" fill="none" />
                                 <defs>
                                     <mask id="SVG4zf1KeAv">
-                                        <path fill="#fff" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7h5c2.76 0 5 2.24 5 5c0 2.76 -2.24 5 -5 5h-10c-2.76 0 -5 -2.24 -5 -5c0 -2.76 2.24 -5 5 -5Z" />
+                                        <path fill="#fff" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 7h5c2.76 0 5 2.24 5 5c0 2.76 -2.24 5 -5 5h-10c-2.76 0 -5 -2.24 -5 -5c0 -2.76 2.24 -5 5 -5Z" />
                                         <circle cx="17" cy="12" r="3">
                                             <animate fill="freeze" attributeName="cx" dur="0.2s" values="7;17" />
                                         </circle>
@@ -287,10 +292,9 @@ export const TeachSubject = () => {
                                 <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#SVG4zf1KeAv)" />
                             </svg>
                         ) : (
-                            /* ✅ ANIMATED OFF SVG */
                             <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="50px" viewBox="0 0 24 24">
                                 <path d="M0 0h24v24H0z" fill="none" />
-                                <path fill="none" stroke="currentColor" stroke-dasharray="54" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7h5c2.76 0 5 2.24 5 5c0 2.76 -2.24 5 -5 5h-10c-2.76 0 -5 -2.24 -5 -5c0 -2.76 2.24 -5 5 -5Z">
+                                <path fill="none" stroke="currentColor" strokeDasharray="54" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 7h5c2.76 0 5 2.24 5 5c0 2.76 -2.24 5 -5 5h-10c-2.76 0 -5 -2.24 -5 -5c0 -2.76 2.24 -5 5 -5Z">
                                     <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="54;0" />
                                 </path>
                                 <circle cx="7" cy="12" r="3" fill="currentColor" opacity="0">
@@ -310,7 +314,8 @@ export const TeachSubject = () => {
                             onChange={(e) => setRequestClass(e.target.value)}
                         >
                             <option value="">-- Choose Class --</option>
-                            {classArray.map(c => <option key={c.id} value={c.class_name}>{c.class_name}</option>)}
+                            {/* ✅ Value is ID, Text is Name */}
+                            {classArray.map(c => <option key={c.id} value={c.id}>{c.class_name}</option>)}
                         </select>
                         <button 
                             onClick={handleClassTeacherRequest}
@@ -340,13 +345,15 @@ export const TeachSubject = () => {
                     {requestStatus === 'pending' && (
                         <div className='bg-amber-50 border border-amber-100 p-3 rounded-xl flex items-center gap-2'>
                            <div className='w-2 h-2 bg-amber-500 rounded-full animate-pulse'></div>
-                           <p className='text-xs font-bold text-amber-700'>Request for <span className='underline'>{requestClass}</span> is pending Admin approval.</p>
+                           {/* ✅ Display readable name */}
+                           <p className='text-xs font-bold text-amber-700'>Request for <span className='underline'>{classNamesMap[requestClass] || "Class"}</span> is pending Admin approval.</p>
                         </div>
                     )}
                     {requestStatus === 'approved' && (
                         <div className='bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center gap-2'>
                            <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                           <p className='text-xs font-bold text-blue-700'>Official Class Teacher for: <span className='uppercase'>{finalAssignedClass}</span></p>
+                           {/* ✅ Display readable name */}
+                           <p className='text-xs font-bold text-blue-700'>Official Class Teacher for: <span className='uppercase'>{classNamesMap[finalAssignedClass] || "Assigned Class"}</span></p>
                         </div>
                     )}
                 </div>
