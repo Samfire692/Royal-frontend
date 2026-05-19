@@ -44,7 +44,7 @@ export const Search = () => {
                 {search && (
                     <input 
                         type="text" 
-                        className='border h-9 rounded-lg lg:min-w-6xl p-2 transition-all outline-none focus:border-blue-500' 
+                        className='border h-9 rounded-lg lg:min-w-2xl p-2 transition-all outline-none focus:border-blue-500' 
                         placeholder="Search for something..." 
                         autoFocus
                     />

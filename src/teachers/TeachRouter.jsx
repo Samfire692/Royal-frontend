@@ -8,6 +8,7 @@ import { TeachLogin } from './TeachLogin'
 import { TeachDashboard } from './TeachDashboard'
 import { TeachProfile } from './TeachProfile'
 import { TeachInsertResult } from './TeachInsertResult'
+import { TeachStudentresult } from './TeachStudentresult'
 
 export const TeachRouter = () => {
 
@@ -67,6 +68,7 @@ export const TeachRouter = () => {
                </Route>
                 
                <Route path='/teacherlogin' element={<TeachLogin/>}/>
+               <Route path='/teacher/studentresult' element={<TeachStudentresult/>}/>
            </Routes>
   )
 }

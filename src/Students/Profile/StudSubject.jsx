@@ -105,7 +105,7 @@ export const StudSubject = () => {
         );
     };
 
-    const saveToDatabase = async () => {
+   const saveToDatabase = async () => {
         if (!selectedClasses.id || selectedSubjectIds.length === 0) {
             return Swal.fire("Empty", "Please pick a class and subjects", "warning");
         }
@@ -122,17 +122,29 @@ export const StudSubject = () => {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 
-                // Update profile class_id
-                await supabase.from("studentsignup").update({ class_id: selectedClasses.id }).eq("id", user.id);
+                // 1. UPDATE BOTH COLUMNS: class_id AND current_class
+                // This ensures the Teacher's Dashboard (which looks for current_class) can find them
+                const { error: profileError } = await supabase
+                    .from("studentsignup")
+                    .update({ 
+                        class_id: selectedClasses.id,
+                        current_class: selectedClasses.id // This is the fix!
+                    })
+                    .eq("id", user.id);
 
-                // Insert subjects
+                if (profileError) throw profileError;
+
+                // 2. Insert subjects
                 await supabase.from("studentchooseSubject").delete().eq("student_id", user.id);
+                
                 const inserts = selectedSubjectIds.map(subId => ({
                     student_id: user.id,
                     class_id: selectedClasses.id,
                     subject_id: subId,
                 }));
-                await supabase.from("studentchooseSubject").insert(inserts);
+
+                const { error: subjectError } = await supabase.from("studentchooseSubject").insert(inserts);
+                if (subjectError) throw subjectError;
 
                 setIsLocked(true);
                 localStorage.removeItem('selected_student_class_id');
