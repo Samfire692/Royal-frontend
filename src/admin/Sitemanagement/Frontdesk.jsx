@@ -1,6 +1,7 @@
 import React from 'react'
 import { Stats } from './Stats'
 import { Heroimage } from './Heroimage'
+import { Session } from './Session'
 
 export const Frontdesk = () => {
   return (
@@ -11,6 +12,7 @@ export const Frontdesk = () => {
  
         <div className='flex gap-2 flex-col mt-2'>
           <Stats/>
+          <Session/>
           <Heroimage/>
         </div>
         

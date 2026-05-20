@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import profilepic from '../../assets/Images/admin profile pic.jfif'
 import { FaGraduationCap, FaFile, FaEdit, FaTrash, FaSpinner } from 'react-icons/fa';
 
-export const FirstTermResult = () => {
+export const FirstTermResult = ({ targetYear }) => {
 
     const [studentArray, setStudentarray] = useState([]);
     const [classArray, setClassarray] = useState([]);
@@ -16,13 +16,6 @@ export const FirstTermResult = () => {
     const [results, setResults] = useState([]);
     const [viewResults, setViewresults] = useState("");
     const [loading, setLoading] = useState(false); 
-
-    // --- HELPER: GET CURRENT SESSION ---
-    const getAutoSession = () => {
-        const now = new Date();
-        const year = now.getFullYear();
-        return now.getMonth() >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
-    };
 
     // --- FETCHING DATA FUNCTIONS ---
     const fetchStudents = async (classId) => {
@@ -78,13 +71,14 @@ export const FirstTermResult = () => {
         const teacherId = user?.id;
         const testScore = scores[`${studentId}_test`];
         const examScore = scores[`${studentId}_exam`];
-        const autoSession = getAutoSession();
         const total = Number(testScore) + Number(examScore);
 
+        if (!targetYear) return Swal.fire("Error", "Active academic session not synchronized yet.", "error");
         if (!selectedSubjectId) return Swal.fire("Wait", "Select a subject first!", "warning");
         if (!testScore || !examScore) return Swal.fire("Wait", "Enter both scores", "warning");
 
-        const existing = results.find(r => r.student_id === studentId && r.subject_id === selectedSubjectId && r.session === autoSession);
+        // Double check against targetYear handed down by Admin Timeline
+        const existing = results.find(r => r.student_id === studentId && r.subject_id === selectedSubjectId && r.session === targetYear && r.term === "First Term");
         if (existing) return Swal.fire("Denied", "Result already uploaded for this session!", "error");
 
         setLoading(true); // Start Spinner
@@ -99,7 +93,7 @@ export const FirstTermResult = () => {
                     test_score: Number(testScore),
                     exam_score: Number(examScore),
                     term: "First Term",
-                    session: autoSession,
+                    session: targetYear, // Auto dynamic session placement
                     total_score: total
                 }]);
 
@@ -235,7 +229,7 @@ export const FirstTermResult = () => {
                        {add === item.id && (
                             <form className='mt-2 border-t pt-3'>
                                 <div className='flex flex-col gap-4'>
-                                    <div className='flex gap-4 items-center'>
+                                    <div className='flex flex-wrap gap-4 items-center'>
                                         <div className='bg-blue-50 p-2 rounded-lg'>
                                             <p className='text-[10px] font-bold text-blue-400 uppercase'>Subject</p>
                                             <p className='font-bold text-slate-700 text-sm'>{selectedSubject || "Pick a Subject"}</p>
@@ -261,7 +255,7 @@ export const FirstTermResult = () => {
                                         </div>
                                         <div className='bg-slate-50 p-2 rounded-lg border border-slate-100'>
                                             <p className='text-[9px] font-bold text-slate-400 uppercase'>Session</p>
-                                            <p className='font-bold text-slate-500 text-[11px]'>{item.session || "2025/2026"}</p>
+                                            <p className='font-bold text-slate-500 text-[11px]'>{targetYear || "Syncing..."}</p>
                                         </div>
                                     </div>
                                 </div>

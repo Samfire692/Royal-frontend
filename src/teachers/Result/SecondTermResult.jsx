@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import profilepic from '../../assets/Images/admin profile pic.jfif'
 import { FaGraduationCap, FaFile, FaEdit, FaTrash, FaSpinner } from 'react-icons/fa';
 
-export const SecondTermResult = () => {
+export const SecondTermResult = ({ targetYear }) => {
 
     const [studentArray, setStudentarray] = useState([]);
     const [classArray, setClassarray] = useState([]);
@@ -16,13 +16,6 @@ export const SecondTermResult = () => {
     const [results, setResults] = useState([]);
     const [viewResults, setViewresults] = useState("");
     const [loading, setLoading] = useState(false); 
-
-    // --- HELPER: GET CURRENT SESSION ---
-    const getAutoSession = () => {
-        const now = new Date();
-        const year = now.getFullYear();
-        return now.getMonth() >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
-    };
 
     // --- FETCHING DATA FUNCTIONS ---
     const fetchStudents = async (classId) => {
@@ -81,21 +74,21 @@ export const SecondTermResult = () => {
         const teacherId = user?.id;
         const testScore = scores[`${studentId}_test`];
         const examScore = scores[`${studentId}_exam`];
-        const autoSession = getAutoSession();
         const total = Number(testScore) + Number(examScore);
 
+        if (!targetYear) return Swal.fire("Error", "Active academic session not synchronized yet.", "error");
         if (!selectedSubjectId) return Swal.fire("Wait", "Select a subject first!", "warning");
         if (!testScore || !examScore) return Swal.fire("Wait", "Enter both scores", "warning");
 
-        // CHECK IF SECOND TERM RESULT ALREADY EXISTS
+        // CHECK IF SECOND TERM RESULT ALREADY EXISTS FOR THIS LIVE ADMIN SESSION
         const existing = results.find(r => 
             r.student_id === studentId && 
             r.subject_id === selectedSubjectId && 
-            r.session === autoSession &&
+            r.session === targetYear &&
             r.term === "Second Term"
         );
         
-        if (existing) return Swal.fire("Denied", "2nd Term result already uploaded!", "error");
+        if (existing) return Swal.fire("Denied", "2nd Term result already uploaded for this session!", "error");
 
         setLoading(true);
         try {
@@ -108,8 +101,8 @@ export const SecondTermResult = () => {
                     subject_id: selectedSubjectId, 
                     test_score: Number(testScore),
                     exam_score: Number(examScore),
-                    term: "Second Term", // Updated for 2nd Term
-                    session: autoSession,
+                    term: "Second Term", 
+                    session: targetYear, // Directly saving under synced Admin year config
                     total_score: total
                 }]);
 
@@ -243,7 +236,7 @@ export const SecondTermResult = () => {
                        {add === item.id && (
                             <form className='mt-2 border-t pt-3'>
                                 <div className='flex flex-col gap-4'>
-                                    <div className='flex gap-4 items-center'>
+                                    <div className='flex flex-wrap gap-4 items-center'>
                                         <div className='bg-blue-50 p-2 rounded-lg'>
                                             <p className='text-[10px] font-bold text-blue-400 uppercase'>Subject</p>
                                             <p className='font-bold text-slate-700 text-sm'>{selectedSubject || "Pick a Subject"}</p>
@@ -266,6 +259,11 @@ export const SecondTermResult = () => {
                                                     onChange={(e) => setScores({ ...scores, [`${item.id}_exam`]: e.target.value })}
                                                 />
                                             </div>
+                                        </div>
+                                        
+                                        <div className='bg-slate-50 p-2 rounded-lg border border-slate-100'>
+                                            <p className='text-[9px] font-bold text-slate-400 uppercase'>Session</p>
+                                            <p className='font-bold text-slate-500 text-[11px]'>{targetYear || "Syncing..."}</p>
                                         </div>
                                     </div>
                                 </div>
