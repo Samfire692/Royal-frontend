@@ -6,6 +6,7 @@ import { NewsTestimonial } from './Sitemanagement/NewsTestimonial'
 import { Foundation } from './Sitemanagement/Foundation'
 import { Gallery } from './Sitemanagement/Gallery'
 import { SubjectSetting } from './Sitemanagement/SubjectSetting'
+import { Club } from './Sitemanagement/Club'
 
 
 export const AdminSitemanagement = () => {
@@ -27,6 +28,7 @@ export const AdminSitemanagement = () => {
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "classSettings" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("classSettings")}>Class Settings</button> {/* classes */}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "subjectSettings" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("subjectSettings")}>Subjects Settings</button> {/* classes */}
             <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "foundation" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("foundation")}>Foundation</button> {/* full view of admission forms submitted*/}
+            <button className={`p-2 rounded-xl hover:bg-white hover:text-black ${active === "clubs" ? "bg-white text-black" : "bg-transparent"}`} onClick={()=> setActive("clubs")}>Clubs Settings</button>
            </div>
         </div>
       </section><br />
@@ -55,6 +57,10 @@ export const AdminSitemanagement = () => {
 
            {active === 'subjectSettings' && (
             <SubjectSetting/>
+          )}
+
+          {active === 'clubs' && (
+            <Club/>
           )}
         </div>
       </section>
