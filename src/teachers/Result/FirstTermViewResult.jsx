@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../supabaseClient';
 import Swal from 'sweetalert2'
-import profilePic from '/Royal Ambassadors Schools/frontend/src/assets/Images/admin profile pic.jfif'
+import profilepic from '../../assets/Images/admin profile pic.jfif'
 
 export const FirstTermViewResult = ({targetYear}) => {
     const [loginUser, setLoginuser] = useState(null);
@@ -156,7 +156,7 @@ export const FirstTermViewResult = ({targetYear}) => {
            <div className='mt-2 shadow-sm shadow-slate-500 p-3 rounded-xl' key={student.id}>
                <div className='flex gap-2 justify-between'>
                 <div className='flex gap-2'>
-                    <img src={student.profile_pic_url || profilePic} alt="" className='w-10 shadow-sm rounded-full h-fit'/>
+                    <img src={student.profile_pic_url || profilepic} alt="" className='w-10 shadow-sm rounded-full h-fit'/>
                     <div className='grid'>
                         <span className='text-blue-500 font-bold my-auto'>{student.full_name}</span>
                         <small className='text-slate-400'><span className='font-bold'>Cum Avg :</span> {student.cumulativeAverage || "0.00"}%</small>
