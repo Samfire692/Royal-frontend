@@ -10,6 +10,7 @@ import { TeachProfile } from './TeachProfile'
 import { TeachInsertResult } from './TeachInsertResult'
 import { TeachStudentresult } from './TeachStudentresult'
 import { StudentResult } from './Result/StudentResult'
+import { TeachInsertClub } from './TeachInsertClub'
 
 export const TeachRouter = () => {
 
@@ -66,10 +67,11 @@ export const TeachRouter = () => {
                 <Route path='dashboard' element={<TeachDashboard/>}/>
                 <Route path='profile' element={<TeachProfile/>}/>
                 <Route path='insertResult' element={<TeachInsertResult/>}/> 
+                <Route path='insertclub' element={<TeachInsertClub/>}/>
+                <Route path='/teacher/studentresult' element={<TeachStudentresult/>}/>
                </Route>
                 
                <Route path='/teacherlogin' element={<TeachLogin/>}/>
-               <Route path='/teacher/studentresult' element={<TeachStudentresult/>}/>
                <Route path="/teacher/studentsresult" element={<StudentResult/>}/>
            </Routes>
   )

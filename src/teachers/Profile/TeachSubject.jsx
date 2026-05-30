@@ -21,6 +21,12 @@ export const TeachSubject = () => {
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [classNamesMap, setClassNamesMap] = useState({}); // ✅ Mapping IDs to Names
 
+    // ✅ ROYAL CLUB STATES
+    const [clubsList, setClubslist] = useState([]);
+    const [managedClub, setManagedclub] = useState("");
+    const [takenClubs, setTakenClubs] = useState([]); // ✅ Holds clubs already claimed by other teachers
+    const [isClubSubmitting, setIsClubSubmitting] = useState(false);
+
     const fetchClasses = async () => {
         try {
             const { data, error } = await supabase.from("royalclassrooms").select('*');
@@ -47,7 +53,6 @@ export const TeachSubject = () => {
             `);
             if (error) throw error;
             setSubjectarray(data);
-            setLoading(false)
         } catch (error) {
             Swal.fire({ icon: "error", title: "Error", text: error.message });
         }
@@ -63,20 +68,44 @@ export const TeachSubject = () => {
 
     const fetchTeacherStatus = async (id) => {
         try {
+            // 1. Fetch current teacher's status
             const { data, error } = await supabase
                 .from("teachersignup")
-                .select("class_teacher_status, pending_class_request, assigned_class")
+                .select("class_teacher_status, pending_class_request, assigned_class, club_name")
                 .eq("id", id)
                 .single();
 
             if (data) {
                 setRequestStatus(data.class_teacher_status || "none");
-                // We store the ID in state
                 setRequestClass(data.pending_class_request || "");
                 setFinalAssignedClass(data.assigned_class);
+                setManagedclub(data.club_name || "");
             }
+
+            // 2. ✅ Fetch all club names that have already been taken by OTHER teachers
+            const { data: allTeachers, error: teachersError } = await supabase
+                .from("teachersignup")
+                .select("club_name")
+                .neq("id", id) // Exclude current user
+                .not("club_name", "is", null);
+
+            if (teachersError) throw teachersError;
+            
+            const occupied = allTeachers.map(t => t.club_name).filter(Boolean);
+            setTakenClubs(occupied);
+
         } catch (error) {
-            console.error("Error fetching status:", error.message);
+            console.error("Error fetching status/occupied clubs:", error.message);
+        }
+    };
+
+    const fetchClubs = async () => {
+        try {
+            const { data, error } = await supabase.from("royal_club").select("*");
+            if (error) throw error;
+            setClubslist(data);
+        } catch (error) {
+            console.error("Error fetching clubs:", error.message);
         }
     };
 
@@ -171,7 +200,7 @@ export const TeachSubject = () => {
             const { error } = await supabase
                 .from("teachersignup")
                 .update({
-                    pending_class_request: requestClass, // Sending UUID
+                    pending_class_request: requestClass, 
                     class_teacher_status: "pending"
                 })
                 .eq("id", userId);
@@ -187,10 +216,41 @@ export const TeachSubject = () => {
         }
     };
 
+    const handleClubUpdate = async () => {
+        setIsClubSubmitting(true);
+        try {
+            const { error } = await supabase
+                .from("teachersignup")
+                .update({
+                    club_name: managedClub || null // saves name directly, sets null if "Not assigning"
+                })
+                .eq("id", userId);
+
+            if (error) throw error;
+            
+            // ✅ Refresh the local listings to recalculate occupied slots accurately
+            if (userId) fetchTeacherStatus(userId);
+
+            Swal.fire("Success", "Club coordinator assignment updated successfully", "success");
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        } finally {
+            setIsClubSubmitting(false);
+        }
+    };
+
+    const loadAllInitialData = async () => {
+        await Promise.all([
+            fetchClasses(),
+            handleData(),
+            getUser(),
+            fetchClubs()
+        ]);
+        setLoading(false);
+    };
+
     useEffect(() => {
-        fetchClasses();
-        handleData();
-        getUser();
+        loadAllInitialData();
     }, []);
 
     if (loading) {
@@ -271,6 +331,7 @@ export const TeachSubject = () => {
                 </div>
             </div>
 
+            {/* CLASS TEACHER SECTION */}
             <section className='mt-1 border-t border-slate-100 pt-2'>
                 <div className='flex items-center gap-2'>
                     <p className='font-bold text-slate-700'>Class teacher</p>
@@ -314,7 +375,6 @@ export const TeachSubject = () => {
                             onChange={(e) => setRequestClass(e.target.value)}
                         >
                             <option value="">-- Choose Class --</option>
-                            {/* ✅ Value is ID, Text is Name */}
                             {classArray.map(c => <option key={c.id} value={c.id}>{c.class_name}</option>)}
                         </select>
                         <button 
@@ -345,17 +405,64 @@ export const TeachSubject = () => {
                     {requestStatus === 'pending' && (
                         <div className='bg-amber-50 border border-amber-100 p-3 rounded-xl flex items-center gap-2'>
                            <div className='w-2 h-2 bg-amber-500 rounded-full animate-pulse'></div>
-                           {/* ✅ Display readable name */}
                            <p className='text-xs font-bold text-amber-700'>Request for <span className='underline'>{classNamesMap[requestClass] || "Class"}</span> is pending Admin approval.</p>
                         </div>
                     )}
                     {requestStatus === 'approved' && (
                         <div className='bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center gap-2'>
                            <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                           {/* ✅ Display readable name */}
                            <p className='text-xs font-bold text-blue-700'>Official Class Teacher for: <span className='uppercase'>{classNamesMap[finalAssignedClass] || "Assigned Class"}</span></p>
                         </div>
                     )}
+                </div>
+            </section>
+
+            {/* ✅ AUTOMATED CLUB SECTION */}
+            <section className='mt-4 border-t border-slate-100 pt-4'>
+                <div className='p-4 bg-slate-50 rounded-2xl border border-slate-200'>
+                    <p className='text-xs font-bold text-slate-400 uppercase mb-3'>Club Teacher / Coordinator:</p>
+                    <select 
+                        className='w-full h-11 border rounded-xl px-3 bg-white outline-none focus:border-blue-500 text-black font-semibold'
+                        value={managedClub}
+                        onChange={(e) => setManagedclub(e.target.value)}
+                    >
+                        <option value="">Not assigning a club</option>
+                        {clubsList.map((c) => {
+                            // ✅ Check if this club name is taken by another teacher
+                            const isClubTaken = takenClubs.includes(c.club_name);
+                            
+                            return (
+                                <option 
+                                    value={c.club_name} 
+                                    key={c.id}
+                                    disabled={isClubTaken} // ✅ Gray out option if someone else took it
+                                >
+                                    {c.club_name} {isClubTaken ? "🔒 (Occupied)" : ""}
+                                </option>
+                            );
+                        })}
+                    </select>
+                    <button 
+                        onClick={handleClubUpdate}
+                        disabled={isClubSubmitting}
+                        className={`w-full mt-4 h-11 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2 
+                            ${isClubSubmitting 
+                                ? 'bg-blue-400 cursor-not-allowed text-white/80' 
+                                : 'bg-blue-600 text-white active:scale-95 hover:bg-blue-700'
+                            }`}
+                    >
+                        {isClubSubmitting ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Updating...
+                            </>
+                        ) : (
+                            "Update Club Assignment"
+                        )}
+                    </button>
                 </div>
             </section>
         </div>

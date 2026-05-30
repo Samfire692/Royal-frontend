@@ -7,6 +7,7 @@ import { supabase } from '../supabaseClient'
 export const TeachNavbar = () => {
   // ✅ Fixed useState syntax
   const [status, setStatus] = useState(null);
+  const [club, setClub] = useState(null)
 
   const checkClassTeacherStatus = async () => {
     // 1. Get the logged-in user's email from Supabase Auth
@@ -16,12 +17,13 @@ export const TeachNavbar = () => {
       // 2. Check their status in your teachersignup table
       const { data, error } = await supabase
         .from('teachersignup')
-        .select('class_teacher_status')
+        .select('class_teacher_status, club_name')
         .eq('email', user.email)
         .single();
 
       if (!error && data) {
         setStatus(data.class_teacher_status);
+        setClub(data.club_name);
       }
     }
   };
@@ -69,6 +71,13 @@ export const TeachNavbar = () => {
               <NavLink to="/teacher/studentresult" className={linkClasses}>
                 <FaFile className='text-2xl min-w-7.5px' />
                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Student's Result</span>
+              </NavLink>
+            )}
+
+            {club && (
+              <NavLink to="/teacher/insertclub" className={linkClasses}>
+                <FaFile className='text-2xl min-w-7.5px' />
+                <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Insert Club</span>
               </NavLink>
             )}
     
