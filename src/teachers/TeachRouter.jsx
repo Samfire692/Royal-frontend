@@ -11,11 +11,12 @@ import { TeachInsertResult } from './TeachInsertResult'
 import { TeachStudentresult } from './TeachStudentresult'
 import { StudentResult } from './Result/StudentResult'
 import { TeachInsertClub } from './TeachInsertClub'
+import { ReportCard } from './Result/ReportCard'
 
 export const TeachRouter = () => {
 
     const [user, setUser] = useState(null)
-        const [navbar, setNavbar] = useState(false)
+    const [navbar, setNavbar] = useState(false)
     
         useEffect(() => {
             const storedUser = localStorage.getItem('userProfile')
@@ -73,6 +74,7 @@ export const TeachRouter = () => {
                 
                <Route path='/teacherlogin' element={<TeachLogin/>}/>
                <Route path="/teacher/studentsresult" element={<StudentResult/>}/>
+               <Route path='/teacher/reportcard' element={<ReportCard/>}/>
            </Routes>
   )
 }

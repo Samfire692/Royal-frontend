@@ -11,5 +11,11 @@ export default defineConfig({
   build: {
     outDir: 'dist', // This is the folder Vercel is looking for!
     emptyOutDir: true,
+  },
+  // 🌟 SLOT THE FIX RIGHT HERE:
+  resolve: {
+    alias: {
+      'html2canvas': 'html2canvas-pro'
+    }
   }
 })

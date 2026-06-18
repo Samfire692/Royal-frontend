@@ -55,3 +55,22 @@ button{
     outline:royalblue !important;
 } */
 
+
+@media print {
+  body > *:not(.print-only-container) {
+    display: none !important;
+  }
+  .print-only-container {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  #report-card-print-area {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
+@layer base {img{display:initial;}}

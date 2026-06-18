@@ -1,218 +1,273 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react'
 import { supabase } from '../../supabaseClient';
 import Swal from 'sweetalert2';
-import profilepic from '../../assets/Images/admin profile pic.jfif';
+import { ReportCard } from './ReportCard';
 
-export const FirstTermViewResult = ({ targetYear }) => {
-    const [loginUser, setLoginUser] = useState(null);
-    const [students, setStudents] = useState([]);
-    const [activeStudent, setActivestudent] = useState(null);
-    const [studentResult, setStudentresult] = useState([]);
-    const [teacherComment, setTeachercomment] = useState([]);
-    const [teachComments, setTeachcomments] = useState({}); 
-    const [commentLoading, setCommentloading] = useState(null);
+export const FirstTermViewResult = () => {
+    const [id, setId] = useState(null);
+    const [term, setTerm] = useState(null);
+    const [session, setSession] = useState(null);
+    const [assignedClass , setAssignedclass] = useState(null);
+    const [studentsArray, setStudentarray] = useState([]);
+    const [activeMenu, setActivemenu] = useState(false);
+    const [submitLoading, setSubmitloading] = useState(null);
+    const [studentComments, setStudentcomments] = useState({});
+    const [teacherLogin, setTeacherlogin] = useState([]);
+    const [commentArray, setCommentarray] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [activeReportcard, setActivereportCard] = useState(null);
 
-    const fetchData = async () => {
-        if (!targetYear) return;
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+    const fetchData =async()=>{
+      try{
+        const Id = localStorage.getItem("id");
+        const Term = localStorage.getItem("Term");
+        const Session = localStorage.getItem("Session");
+        const AssignedClass = localStorage.getItem("Assignedclass");
 
-            const { data: teacherData, error: teacherError } = await supabase
-                .from("teachersignup")
-                .select("*")
-                .eq("id", user.id)
-                .single();
+        setId(Id);
+        setSession(Session);
+        setTerm(Term);
+        setAssignedclass(AssignedClass);
 
-            if (teacherError) throw teacherError;
-            setLoginUser(teacherData);
+        const {data:{user}} = await supabase.auth.getUser();
 
-            const { data: studentData, error: studentError } = await supabase
-                .from("studentsignup")
-                .select("*")
-                .eq("class_id", teacherData.assigned_class);
+        const {data:teacherData, error:teacherError} = await supabase
+        .from("teachersignup")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+        
+        if(teacherError) throw teacherError;
+        setTeacherlogin(teacherData);
+        console.log("Logged in right now is " , teacherData)
 
-            if (studentError) throw studentError;
+        const {data, error} = await supabase
+        .from("studentsignup")
+        .select("*")
+        .eq("class_id", AssignedClass)
 
-            if (!studentData || studentData.length === 0) {
-                setStudents([]);
-                return;
+        if(error) throw error;
+        setStudentarray(data);
+        console.log("list of students", data)
+        setLoading(false)
+      }catch(error){
+        Swal.fire({
+            icon:"error",
+            title:"Error",
+            text:error.message
+        })
+      }finally{
+
+      }
+    }
+
+    const submitComments = async(id)=> {
+       setSubmitloading(id);
+
+       try{
+        const {error} = await supabase
+        .from("teacher_comments")
+        .upsert({
+            student_id:id,
+            teacher_id:teacherLogin?.id,
+            comment:studentComments[id] || "",
+            term,
+            session
+        }, {onConflict: "student_id, term , session"})
+
+        if(error) throw error
+        Swal.fire({
+            icon:"success",
+            title:"Successful",
+            text:"Uploaded Successfully"
+        })
+
+       }catch(error){
+        Swal.fire({
+            icon:"error",
+            title:"Error", 
+            text:error.message
+        })
+       }finally{
+        setSubmitloading(null)
+       }
+    }
+
+    const fetchComments = async(id)=> {
+        try{
+           const {data, error} = await supabase 
+           .from("teacher_comments")
+           .select("*")
+           .eq("student_id", id)
+           .eq("session", session)
+           .eq("term", term)
+           .maybeSingle();
+
+           if(error) throw error;
+           if (data) {
+               setStudentcomments(prev => ({ ...prev, [id]: data.comment }));
+           }
+        }catch(error){
+            Swal.fire({
+            icon:"error",
+            title:"Error", 
+            text:error.message
+        })
+        }finally{
+
+        }
+    }
+
+    const downloadReportcard = async(id, full_name)=> {
+        try{
+          const html2pdfModule = await import ('html2pdf.js');
+          const html2pdf = html2pdfModule.default;
+          const element = document.getElementById("reportCard")
+          html2pdf (element, {
+            margin: [15, 12, 15, 12],
+            filename: `${full_name}_Report_Card.pdf`,
+            image:{type:"jpeg", quality:0.98},
+            html2canvas:{
+                scale:2,
+                useCORS:true,
+                windowWidth:1100
+            }, 
+            jsPDF:{
+                unit:'mm',
+                format:'a4',
+                orientation:'portrait'
             }
+          })
+        }catch(error){
+        //   console.error("Download initializing failed", error);
+        }finally{
 
-            const studentIDs = studentData.map(student => student.id);
-
-            const { data: studentResultData, error: studentResultError } = await supabase
-                .from("student_results")
-                .select("*")
-                .in("student_id", studentIDs)
-                .eq("session", targetYear);
-
-            if (studentResultError) throw studentResultError;
-            setStudentresult(studentResultData);
-
-            const { data: commentdata, error: commenterror } = await supabase
-                .from("teacher_comments")
-                .select("*")
-                .eq("term", "First Term")
-                .eq("session", targetYear);
-
-            if (commenterror) throw commenterror;
-            setTeachercomment(commentdata);
-
-            const initialCommentMap = {};
-            commentdata.forEach(c => {
-                initialCommentMap[c.student_id] = c.comment;
-            });
-            setTeachcomments(initialCommentMap);
-
-            // 1. Calculate cumulative averages
-            const computedStudents = studentData.map(student => {
-                const results = studentResultData.filter(result => result.student_id === student.id);
-
-                const sumTestExam = results.reduce((sum, result) => {
-                    const test = Number(result.test_score) || 0;
-                    const exam = Number(result.exam_score) || 0;
-                    return sum + test + exam;
-                }, 0);
-
-                const subjectCount = results.length;
-                const cumulativeAverage = subjectCount > 0 ? (sumTestExam / subjectCount).toFixed(2) : "0.00";
-
-                return {
-                    ...student,
-                    // Store as a float number so JavaScript sorts it accurately mathematically
-                    sortableAverage: parseFloat(cumulativeAverage), 
-                    cumulativeAverage: cumulativeAverage
-                };
-            });
-
-            // ✅ 2. SORT FROM HIGHEST PERCENTAGE TO LOWEST PERCENTAGE (Descending)
-            computedStudents.sort((a, b) => b.sortableAverage - a.sortableAverage);
-
-            setStudents(computedStudents);
-
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Data Sync Failure",
-                text: error.message
-            });
         }
-    };
+    }
 
-    const commentSubmit = async (studentId, existingComment) => {
-        setCommentloading(studentId);
-        const currentText = teachComments[studentId] || ""; 
+    const viewReportCard = async(id)=> {
+      localStorage.setItem("StudentId" , id);
+    }
 
-        try {
-            const { error } = await supabase
-                .from("teacher_comments")
-                .upsert({
-                    ...(existingComment?.id && { id: existingComment.id }),
-                    student_id: studentId,
-                    teacher_id: loginUser?.id, 
-                    term: "First Term",
-                    session: targetYear,
-                    comment: currentText
-                });
-
-            if (error) throw error;
-
-            Swal.fire({
-                icon: "success",
-                title: "Success",
-                text: "Uploaded Successfully",
-                timer: 1500,
-                showConfirmButton: false
-            });
-
-            fetchData();
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: error.message
-            });
-        } finally {
-            setCommentloading(null);
-        }
-    };
-
-    const handleTextareaChange = (studentId, text) => {
-        setTeachcomments(prev => ({
-            ...prev,
-            [studentId]: text
-        }));
-    };
-
-    useEffect(() => {
+    useEffect(()=>{
         fetchData();
-    }, [targetYear]);
+    }, [])
 
-    return (
-        <div>
-            <div>
-                <h2 className='text-blue-500 font-bold text-lg'>First Term View Result</h2>
+    if(loading){
+        return(
+            <div className='p-3 shadow-sm shadow-slate-400 rounded-xl text-center'>
+                <span className=' animate-pulse font-bold text-slate-400 flex justify-center gap-2'>Fetching Students 
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <g>
+                    <circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity=".14" />
+                    <circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity=".29" />
+                    <circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity=".43" />
+                    <circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity=".57" />
+                    <circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity=".71" />
+                    <circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity=".86" />
+                    <circle cx="12" cy="21.5" r="1.5" fill="currentColor" />
+                    <animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" />
+                    </g>
+                    </svg>
+                </span> 
+                </span>
             </div>
-            <br />
+        )
+    }
+  return (
+    <div>
+       <div className='flex gap-1'>
+        <h2 className='text-xl font-bold text-blue-500'>{term}</h2>
+        <small className='font-bold text-blue-500 mt-1.5'>({session})</small>
+       </div>
 
-            <div className='flex flex-col gap-3'>
-                {students.map((student) => {
-                    const existingComment = teacherComment.find(c => c.student_id === student.id);
+       <div className='mt-3'>
+         {studentsArray.map((students)=> (
+            <div key={students.id} className='shadow-sm shadow-slate-400 rounded-xl p-2 mt-2'>
+                <div className='flex justify-between'>
+                    <div className='w-full flex justify-between pe-3'>
+                      <div>
+                        <p className='font-bold text-blue-700'>{students.full_name}</p>
+                        <small className='text-slate-400'>{students.special_id}</small>
+                      </div>
+                        {/* <button className='text-blue-500 h-fit p-1 rounded-full my-auto bg-blue-500/20' onClick={()=> downloadReportcard(students.id, students.full_name)}>
+                            <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+	                        <path d="M0 0h24v24H0z" fill="none" />
+	                        <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+		                    <path fill="currentColor" fill-opacity="0" stroke-dasharray="20" d="M12 4h2v6h2.5l-4.5 4.5M12 4h-2v6h-2.5l4.5 4.5">
+			                <animate attributeName="d" dur="1.5s" keyTimes="0;0.5;1" repeatCount="indefinite" values="M12 4h2v6h2.5l-4.5 4.5M12 4h-2v6h-2.5l4.5 4.5;M12 4h2v3h2.5l-4.5 4.5M12 4h-2v3h-2.5l4.5 4.5;M12 4h2v6h2.5l-4.5 4.5M12 4h-2v6h-2.5l4.5 4.5" />
+			                <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="20;0" />
+			                <animate fill="freeze" attributeName="fill-opacity" begin="0.7s" dur="0.4s" to="1" />
+		                    </path>
+		                    <path fill="none" stroke-dasharray="14" stroke-dashoffset="14" d="M6 19h12">
+		                 	<animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.2s" to="0" />
+		                    </path>
+	                        </g>
+                            </svg>
+                            </span>
+                        </button> */}
+                    </div>
 
-                    return (
-                        <div className='shadow-sm shadow-slate-500/40 p-3 rounded-xl bg-white border border-slate-100' key={student.id}>
-                            <div className='flex gap-2 justify-between items-center'>
-                                <div className='flex gap-3 items-center'>
-                                    <img src={student.profile_pic_url || profilepic} alt="" className='w-10 h-10 shadow-sm rounded-full object-cover' />
-                                    <div className='grid'>
-                                        {/* Using both properties just in case your column name varies */}
-                                        <span className='text-blue-500 font-bold'>{student.full_name || student.student_name}</span>
-                                        <small className='text-slate-400'><span className='font-bold'>Cum Avg :</span> {student.cumulativeAverage || "0.00"}%</small>
-                                    </div>
-                                </div>
+                    <button onClick={()=> {
+                        const menuOpen = activeMenu !== students.id;
+                        setActivemenu(activeMenu === students.id ? "" : students.id) ;
+                        if(menuOpen){
+                            fetchComments(students.id);
+                        }}} className={` transition-all ${activeMenu === students.id ? "-rotate-180" : " "}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+	                  <path d="M0 0h24v24H0z" fill="none" />
+          	          <path fill="none" stroke="currentColor" strokeDasharray="10" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15l-5 -5M12 15l5 -5">
+		              <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="10;0" />
+	                  </path>
+                      </svg>
+                    </button>
+                </div>
 
-                                <button 
-                                    className={`transition-all duration-300 transform ${activeStudent === student.id ? "rotate-180" : ""}`} 
-                                    onClick={() => setActivestudent(activeStudent === student.id ? null : student.id)}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"> 
-                                        <path d="M0 0h24v24H0z" fill="none" /> 
-                                        <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15l-5 -5M12 15l5 -5"/>
-                                    </svg>
-                                </button>
-                            </div>
+                 <div className={`flex justify-center ${activeMenu === students.id ? "hidden" : ""}`}>
+                    <button className='bg-blue-300/30 w-50 p-2 rounded-xl text-blue-500 font-bold' onClick={()=>{
+                        setActivereportCard(activeReportcard === students.id ? "" : students.id); viewReportCard(students.id)
+                    }}>View Report Card</button>
+                 </div>
 
-                            {activeStudent === student.id && (
-                                <form className='mt-3 border-t border-dashed border-slate-100 pt-3'>
-                                    <textarea 
-                                        value={teachComments[student.id] || ""} 
-                                        className='border w-full rounded-lg p-2 h-24 outline-none focus:border-blue-500 bg-slate-50/50 resize-none text-sm' 
-                                        placeholder={`Enter performance remark for ${student.full_name || student.student_name}`} 
-                                        onChange={(e) => handleTextareaChange(student.id, e.target.value)}
-                                    />
+               {activeReportcard === students.id && (
+                 <div className='mt-4'>
+                    <div id='reportCard'>
+                         <ReportCard/>
+                    </div>
+                    <div className='flex justify-center'>
+                        <button className='bg-blue-500 w-40 rounded-xl text-white p-2 mt-2' onClick={()=> downloadReportcard(students.id, students.full_name)}>Download</button>
+                    </div>
+                 </div>
+               )}
 
-                                    <div className='flex justify-end mt-2'>
-                                        <button 
-                                            className='bg-blue-600 w-32 p-2 rounded-xl text-white font-bold text-sm shadow-sm hover:bg-blue-700 active:scale-95 transition-transform flex items-center justify-center h-10' 
-                                            onClick={() => commentSubmit(student.id, existingComment)} 
-                                            type='button'
-                                            disabled={commentLoading === student.id}
-                                        >
-                                            {commentLoading === student.id ? (
-                                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                            ) : "Upload"}
-                                        </button>
-                                    </div>
-                                </form>
-                            )}
-                        </div>
-                    );
-                })}
+               {activeMenu === students.id &&(
+                 <div className='mt-2'>
+                    <textarea name="" id="" className='w-full border h-25 rounded-lg p-2' onChange={(e) => setStudentcomments({ ...studentComments, [students.id]: e.target.value })} value={studentComments[students.id] || ""}></textarea>
+                    <button className='w-full p-2 bg-blue-500 rounded-xl text-white font-bold' onClick={()=> submitComments(students.id)}>{submitLoading === students.id
+                     ?
+                    <span className='flex justify-center'>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <g>
+                        <circle cx="12" cy="2.5" r="1.5" fill="currentColor" opacity=".14" />
+                        <circle cx="16.75" cy="3.77" r="1.5" fill="currentColor" opacity=".29" />
+                        <circle cx="20.23" cy="7.25" r="1.5" fill="currentColor" opacity=".43" />
+                        <circle cx="21.5" cy="12" r="1.5" fill="currentColor" opacity=".57" />
+                        <circle cx="20.23" cy="16.75" r="1.5" fill="currentColor" opacity=".71" />
+                        <circle cx="16.75" cy="20.23" r="1.5" fill="currentColor" opacity=".86" />
+                        <circle cx="12" cy="21.5" r="1.5" fill="currentColor" />
+                        <animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12" />
+                        </g>
+                        </svg>
+                    </span>
+                    : "Submit"}</button>
+                 </div>
+               )}
             </div>
-        </div>
-    );
-};
+         ))}
+       </div><br />
+    </div>
+  )
+}
