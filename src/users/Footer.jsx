@@ -13,7 +13,7 @@ export const Footer = () => {
        .select("*")
 
        if(error) throw error;
-       setSetting(data);
+       setSetting(data[0]);
        console.log("my data" , data);
      }catch(error){
        console.log("Error" , error);
