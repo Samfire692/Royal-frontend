@@ -28,6 +28,8 @@ export const FirstTermViewResult = () => {
         setSession(Session);
         setTerm(Term);
         setAssignedclass(AssignedClass);
+ 
+         if(!Id) return;
 
         const {data:{user}} = await supabase.auth.getUser();
 
@@ -39,7 +41,7 @@ export const FirstTermViewResult = () => {
         
         if(teacherError) throw teacherError;
         setTeacherlogin(teacherData);
-        console.log("Logged in right now is " , teacherData)
+        // console.log("Logged in right now is " , teacherData)
 
         const {data, error} = await supabase
         .from("studentsignup")
@@ -48,7 +50,7 @@ export const FirstTermViewResult = () => {
 
         if(error) throw error;
         setStudentarray(data);
-        console.log("list of students", data)
+        // console.log("list of students", data)
         setLoading(false)
       }catch(error){
         Swal.fire({

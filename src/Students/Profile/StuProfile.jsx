@@ -15,6 +15,7 @@ export const StuProfile = () => {
     const [gender, setGender]=useState("");
     const [dob, setDob]=useState("");
     const [club, setClub] = useState([]);
+    const [dateOfbirth, setDateofBirth] = useState("");
     const [studClub, setStudclub] = useState("")
 
      const fetchdata = async()=>{
@@ -65,7 +66,8 @@ export const StuProfile = () => {
           phone_number: phoneNumber || profile.phone_number,
           gender: gender || profile.gender,
           post: post || profile.post,
-          club_name: studClub || profile.club_name
+          club_name: studClub || profile.club_name,
+          date_of_birth: dateOfbirth || profile.date_of_birth
         })
         .eq("id", user.id)
        
@@ -140,6 +142,11 @@ export const StuProfile = () => {
                     <option value={clubs.club_name} key={clubs.id}>{clubs.club_name}</option>
                   ))}
               </select>
+            </div>
+
+            <div className='grid'>
+              <label htmlFor="">DOB</label>
+              <input type="text" className='border h-12 p-3 rounded-xl mt-2' onChange={(e)=> setDateofBirth(e.target.value)}/>
             </div>
 
              

@@ -9,6 +9,8 @@ import Swal from 'sweetalert2'
 import { Dashboards } from './Dashboard/Dashboards'
 import { Search } from '../Search'
 import { Link } from 'react-router-dom'
+import { Intro } from './Dashboard/Intro'
+
 
 export const Dashboard = () => {
     // --- NOTIFICATION LOGIC START ---
@@ -40,7 +42,7 @@ export const Dashboard = () => {
     // --- NOTIFICATION LOGIC END ---
 
     return (
-        <div className='text-black pb-2'>
+        <div className='text-black pb-2 px-2'>
             <div className='mb-2 flex justify-between'>
                 <h2 className='text-3xl font-bold'>Dashboard</h2>
                 
@@ -61,11 +63,10 @@ export const Dashboard = () => {
             </div>
             <hr />
             <Dashboards />
-
+             
             <section id='formTotal'>
-                <div className='formTotal flex flex-col md:flex-row gap-3'>
+                <div className='formTotal gap-3'>
                     <Form />
-                    <Attendance />
                 </div>
             </section>
         </div>

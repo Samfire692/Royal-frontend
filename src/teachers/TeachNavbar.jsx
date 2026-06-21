@@ -3,11 +3,13 @@ import { NavLink } from 'react-router-dom'
 import { FaTachometerAlt, FaUser, FaBullhorn, FaDoorOpen, FaPlusSquare, FaFile } from 'react-icons/fa'
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 import { supabase } from '../supabaseClient'
+import { useNavigate } from 'react-router-dom'
 
 export const TeachNavbar = () => {
   // ✅ Fixed useState syntax
   const [status, setStatus] = useState(null);
-  const [club, setClub] = useState(null)
+  const [club, setClub] = useState(null);
+  const navigate = useNavigate();
 
   const checkClassTeacherStatus = async () => {
     // 1. Get the logged-in user's email from Supabase Auth
@@ -26,11 +28,23 @@ export const TeachNavbar = () => {
         setClub(data.club_name);
       }
     }
+
+    const teacherProfile = localStorage.getItem("TeacherProfile");
+
+    if(!teacherProfile){
+      navigate("/teacherlogin")
+    }
   };
 
   useEffect(() => {
     checkClassTeacherStatus();
   }, []);
+
+  const LogOut = async()=> {
+     localStorage.clear();
+
+     navigate("/teacherlogin")
+  }
 
   const linkClasses = ({ isActive }) => 
     `flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-all overflow-hidden ` + 
@@ -60,11 +74,6 @@ export const TeachNavbar = () => {
               <FaPlusSquare className='text-2xl min-w-7.5px' />
               <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Insert Result</span>
             </NavLink>
-    
-            <NavLink to="/teacher/announcementboard" className={linkClasses}>
-              <FaBullhorn className='text-2xl min-w-7.5px' />
-              <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Announcement</span>
-            </NavLink>
 
             {/* ✅ Only show Student's Result if status is 'approved' */}
             {status === 'approved' && (
@@ -81,10 +90,10 @@ export const TeachNavbar = () => {
               </NavLink>
             )}
     
-            <NavLink to="/teacherlogin" className='flex items-center gap-3 w-full px-3 py-2 mt-20 text-red-100 hover:bg-red-600 rounded-lg transition-all'>
+            <button className='flex items-center gap-3 w-full px-3 py-2 mt-20 text-red-100 hover:bg-red-600 rounded-lg transition-all' onClick={LogOut}>
               <FaDoorOpen className='text-2xl min-w-7.5px' />
               <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Logout</span>
-            </NavLink>
+            </button>
           </div>
         </nav>
       </div>

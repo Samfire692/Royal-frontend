@@ -16,7 +16,7 @@ export const TeachStudentresult = () => {
           .from("teachersignup")
           .select("*")
           .eq("id", user.id)
-          .single()
+          .maybeSingle()
 
           if(error) throw error;
           setTeacherlogin(teacherData)
@@ -39,7 +39,7 @@ export const TeachStudentresult = () => {
 
         setSession(data);
         setActivemenuLoading("")
-        console.log('list of session' , data)
+        // console.log('list of session' , data)
       }catch(error){
          Swal.fire({
             icon:"error",
@@ -77,7 +77,7 @@ export const TeachStudentresult = () => {
     }, [])
     
   return (
-    <div className='pb-3'>
+    <div className='pb-3 px-2'>
         <div>
             <h2 className='text-3xl font-bold'>Student Result</h2>
         </div>

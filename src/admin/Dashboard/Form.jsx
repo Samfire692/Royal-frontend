@@ -26,7 +26,7 @@ export const Form = () => {
   },[])
 
   return (
-        <div className='md:min-w-[60vw] px-3 py-2 rounded-2xl' style={{boxShadow:"0px 0px 3px royalblue"}}>
+        <div className='px-3 py-2 rounded-2xl' style={{boxShadow:"0px 0px 3px royalblue"}}>
              <h2 className='font-bold text-2xl text-blue-900'>New Student Enrollment</h2>
 
              <Link className='flex flex-col gap-2 mt-4' to={"/admin/form"}>

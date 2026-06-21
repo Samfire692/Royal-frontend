@@ -35,7 +35,7 @@ export const TeachRouter = () => {
                {navbar && (
                  <div className='flex'>
                    <TeachNavbar/>
-                   <button className='text-white border-0 rounded-xl w-9 h-9 p-1.5 absolute text-2xl right-22 md:left-90 top-2 bg-red-500' onClick={() => setNavbar(false)}><FaTimes /></button>
+                   <button className='text-white border-0 rounded-xl w-9 h-9 p-1.5 absolute text-2xl bg-red-500 z-50 right-[18vw] md:left-[41vw]' onClick={() => setNavbar(false)}><FaTimes /></button>
                  </div>
                )}
              </div>

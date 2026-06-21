@@ -7,6 +7,7 @@ import { FaBars, FaTimes, FaBell } from 'react-icons/fa'
 import { Search } from '../admin/Search'
 import { Link } from 'react-router-dom'
 import { StudentProfile } from './StudentProfile'
+import { Result } from './Result'
 
 export const StudentRouter = () => {
     const [user, setUser] = useState(null)
@@ -61,6 +62,7 @@ export const StudentRouter = () => {
             }>
              <Route path='dashboard' element={<StudentDashboard/>}/>
              <Route path='profile' element={<StudentProfile/>}/>
+             <Route path = 'checkresult' element={<Result/>}/>
             </Route>
              
             <Route path='/student/' element={<StuLogin />}/>

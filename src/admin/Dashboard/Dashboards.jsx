@@ -83,7 +83,7 @@ export const Dashboards = () => {
              </Link>
 
             <Link to={'/admin/studentlist'} className='group'>
-              <div className='ps-5 py-3 rounded-3xl cursor-pointer bg-purple-100/30' style={{boxShadow:"0px 0px 3px purple"}}>
+              <div className='ps-5 py-3 rounded-3xl cursor-pointer bg-purple-100/30 group-hover:scale-102 transition-all' style={{boxShadow:"0px 0px 3px purple"}}>
               <div className='flex justify-between'>
                <FaUserGraduate className='w-13 h-13 p-3 rounded-2xl text-purple-700 bg-purple-300/30'/>
                <span className='text-purple-700/80 w-10 h-10 p-2 me-2 my-auto rounded-full group-hover:scale-130 transition-all'><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="none"/><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path strokeDasharray="12" d="M10 14l-6.5 6.5M14 10l6.5 -6.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="12;0"/></path><path strokeDasharray="8" stroke-dashoffset="8" d="M21 3h-6M3 21v-6M21 3v6M3 21h6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.2s" to="0"/></path></g></svg></span>

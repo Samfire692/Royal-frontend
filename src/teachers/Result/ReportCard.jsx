@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 export const ReportCard = () => {
 
     const [studentid, setStudentId] = useState(null);
+    const [teacherdata, setTeacherdata] = useState(null);
     const [sessionTerm , setSessionterm] = useState(null);
     const [sessionYear, setSessionyear] = useState(null);
     const [studentInfo, setStudentinfo] = useState({});
@@ -24,11 +25,23 @@ export const ReportCard = () => {
          setSessionterm(SessionTerm);
          setSessionyear(SessionYear);
 
+         const {data:{user}} = await supabase.auth.getUser();
+         const {data:teacherData, error:teacherError} = await supabase
+         .from("teachersignup")
+         .select("*")
+         .eq("id", user?.id)
+         .maybeSingle()
+         
+
+         if(teacherError) throw teacherError
+         setTeacherdata(teacherData);
+        //  console.log("currently" , user?.id)
+
          const {data, error} = await supabase
          .from("studentsignup")
          .select("*")
          .eq("id", studentID)
-         .single();
+         .maybeSingle();
 
          if(error) throw error
         if(data?.class_id){
@@ -36,7 +49,7 @@ export const ReportCard = () => {
          .from("royalclassrooms")
          .select("*")
          .eq("id", data.class_id)
-         .single();
+         .maybeSingle();
 
          if(!classError && classData){
             data.royalclassrooms = classData
@@ -116,14 +129,14 @@ export const ReportCard = () => {
                          }else if(sessionTerm === "Second Term"){
                             const firstTerm = studentSubjectresults.find(item => item.subject_id === results.subject_id && item.term === "First Term")
 
-                            console.log("first score ", firstTerm)
+                            console.log("first score ", firstTerm) 
 
                             const firstTermScore = Number(firstTerm?.test_score || 0) + Number(firstTerm?.exam_score || 0);
 
                             const addition = firstTermScore + cummScore
-                            weightAverage = addition / 2;
+                            weightAverage = addition / 2 || 0;
 
-                            firstterm = firstTermScore;
+                            firstterm = firstTermScore || 0;
                          }else{
                             const firstTerm = studentSubjectresults.find(firstitem => firstitem.subject_id === results.subject_id && firstitem.term === "First Term")
 
@@ -131,14 +144,15 @@ export const ReportCard = () => {
 
                             const firstTermScore = Number(firstTerm?.test_score || 0) + Number(firstTerm?.exam_score || 0);
                             
-                            const secondTermScore = Number(secondTerm?.test_score) + Number(secondTerm?.exam_score);
+                            const secondTermScore = Number(secondTerm?.test_score || 0) + Number(secondTerm?.exam_score || 0);
                             
                             console.log("second score", secondTerm);
                             const addition = firstTermScore + secondTermScore + cummScore
-                            weightAverage = addition / 3;
+                            weightAverage = addition / 3 || 0;
 
-                            firstterm = firstTermScore;
-                            secondterm = secondTermScore;
+                            firstterm = firstTermScore || 0;
+                            secondterm = secondTermScore || 0;
+                            console.log("second Term", secondTermScore)
                          }
 
                          const finalWeightAverage = Math.round(weightAverage);
@@ -192,6 +206,19 @@ export const ReportCard = () => {
                              const totalSubjects = Results.length;
                              const totalCummulativeScore = Results.reduce((sum, item) => sum + item.weightAverage, 0);
                              const finalPercentage = totalSubjects > 0 ? ((totalCummulativeScore / (totalSubjects * 100)) * 100).toFixed(1) : "0.0";
+
+                             let adminComment = "_"
+                              if(finalPercentage >= 90){
+                                adminComment = "Outstanding! Keep up the excellent work.";
+                              }else if(finalPercentage >= 75){
+                                adminComment = "Very Good. You are performing well.";
+                              }else if(finalPercentage >= 60){
+                                adminComment = "Good job, but there is room for improvement.";
+                              }else if(finalPercentage >= 50){
+                                adminComment = "Fair performance. You need to study harder.";
+                              }else{
+                                adminComment = "Needs improvement. Please contact the teacher for extra support."
+                              }
                              
     if(loading){
         return(
@@ -203,7 +230,7 @@ export const ReportCard = () => {
 
   return (
     <div className='mx-auto overflow-x-scroll shadow-sm shadow-slate-500 rounded-xl p-3'>
-        <div className='mx-auto'>
+        <div className='lg:w-full w-270 mx-auto'>
             <div className='flex justify-between px-3'>
            <div className='grid text-center h-fit my-auto'>
               <small className='uppercase font-bold italic'>Report Card</small>
@@ -234,7 +261,7 @@ export const ReportCard = () => {
              </div>
 
               <div>
-                <small className='uppercase'>Date Of Birth : <span className='font-bold text-slate-700 border-b border-dashed'>{studentInfo.DOB || "empty"}</span></small>
+                <small className='uppercase'>Date Of Birth : <span className='font-bold text-slate-700 border-b border-dashed'>{studentInfo.date_of_birth || "empty"}</span></small>
              </div>
 
               <div>
@@ -244,8 +271,8 @@ export const ReportCard = () => {
         </div>
 
         <div className='mt-3'>
-             <p className='text-center font-bold p-1 border'>ACADEMIC PERFORMANCE</p>
-            <table className='border w-full'>
+             <p className='text-center font-bold p-1'>ACADEMIC PERFORMANCE</p>
+            <table className='border mx-auto'>
                 <thead>
                     <tr>
                         <th>Subjects</th>
@@ -318,7 +345,9 @@ export const ReportCard = () => {
 
                     <div>
                        <small>Signature & Date :</small>
-                       <span className='ps-1 border-b'>{teacherComments?.created_at ? new Date(teacherComments.created_at).toLocaleDateString('en-GB') : "-"} Null . . .
+                       <span className='ps-1 border-b'>
+                        {teacherComments?.created_at ? new Date(teacherComments.created_at).toLocaleDateString('en-GB') : "-"} 
+                        <span><img src={teacherdata?.signature_url} alt="" className='w-25'/></span>
                        </span>
                     </div>
                 </div>
@@ -326,7 +355,7 @@ export const ReportCard = () => {
                  <div className='w-full flex justify-between'>
                     <div>
                        <small>Principal's Comment :</small>
-                       <span className='ps-1 border-b'>{teacherComments?.comment}</span>
+                       <span className='ps-1 border-b'>{adminComment}</span>
                     </div>
 
                     <div>

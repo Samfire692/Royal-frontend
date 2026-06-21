@@ -98,7 +98,7 @@ export const StudentProfile = () => {
           {profile.map((item) => (
             <section id='Profile' key={item.id}>
               <div className='Profile'>
-                <div className='cover bg-purple-400 h-35'></div>
+                <div className='cover bg-blue-500 h-35'></div>
     
                 <div className='px-4 flex flex-col md:flex-row gap-5'>
                   <div className='shadow-sm -my-10 p-3 bg-white text-center lg:min-w-[20vw] md:min-w-[30vw]'>
@@ -106,11 +106,11 @@ export const StudentProfile = () => {
                       <img 
                         src={previewUrl || item.profile_pic_url || profilepic} 
                         alt="Admin" 
-                        className={`mx-auto lg:my-0 -mt-18 md:my-0 w-30 h-30 object-cover rounded-full shadow-sm border-4 border-purple-500/50 bg-white ${uploading ? 'opacity-50' : ''}`} 
+                        className={`mx-auto lg:my-0 -mt-18 md:my-0 w-30 h-30 object-cover rounded-full shadow-sm border-4 border-blue-500 bg-white ${uploading ? 'opacity-50' : ''}`} 
                       />
                       
                       <div className='absolute lg:my-[11vh] md:my-[7vh] lg:left-[11.8vw] left-[50.3vw] md:left-[17.8vw]'>
-                        <label className='bg-purple-400 p-1.5 w-7.5 h-7.5 rounded-full border-2 border-white text-white flex items-center justify-center cursor-pointer'>
+                        <label className='bg-blue-500 p-1.5 w-7.5 h-7.5 rounded-full border-2 border-white text-white flex items-center justify-center cursor-pointer'>
                           {uploading ? (
                             <span className="text-[10px]">...</span>
                           ) : (
