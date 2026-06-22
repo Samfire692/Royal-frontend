@@ -142,6 +142,9 @@ export const Profiles = () => {
 
         <div className='md:col-span-2 grid'>
           <label className='font-bold mb-2'>Admin Signature</label>
+          <div className='border w-fit p-2 my-2'>
+            <img src={profile.signature_url} alt="" className='w-50' />
+          </div>
           <div className='border-2 border-slate-600 rounded-xl overflow-hidden bg-white'>
             <SignatureCanvas
               ref={sigPad}
