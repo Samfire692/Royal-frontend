@@ -20,9 +20,9 @@ export const TeachStudentresult = () => {
 
           if(error) throw error;
           setTeacherlogin(teacherData)
-          console.log("my name is" , user)
+          // console.log("my name is" , user)
           
-          console.log("nn", teacherData.assigned_class);
+          // console.log("nn", teacherData.assigned_class);
         }catch(error){
 
         }finally{

@@ -28,7 +28,7 @@ export const Promotion = () => {
 
     if(classError) throw classError;
     setClassarray(classData);
-    console.log("lists of classes" , classData)
+    // console.log("lists of classes" , classData)
    }catch(error){
      Swal.fire({
       icon:"error", 

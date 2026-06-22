@@ -12,6 +12,7 @@ import { TeachStudentresult } from './TeachStudentresult'
 import { StudentResult } from './Result/StudentResult'
 import { TeachInsertClub } from './TeachInsertClub'
 import { ReportCard } from './Result/ReportCard'
+import { Studentsignup } from './Studentsignup'
 
 export const TeachRouter = () => {
 
@@ -65,11 +66,11 @@ export const TeachRouter = () => {
    
              </div>
                }>
-                <Route path='dashboard' element={<TeachDashboard/>}/>
                 <Route path='profile' element={<TeachProfile/>}/>
                 <Route path='insertResult' element={<TeachInsertResult/>}/> 
                 <Route path='insertclub' element={<TeachInsertClub/>}/>
                 <Route path='/teacher/studentresult' element={<TeachStudentresult/>}/>
+                <Route path='studentsignup' element={<Studentsignup/>}/>
                </Route>
                 
                <Route path='/teacherlogin' element={<TeachLogin/>}/>

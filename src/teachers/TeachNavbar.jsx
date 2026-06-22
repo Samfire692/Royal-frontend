@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react' // Added useEffect
 import { NavLink } from 'react-router-dom'
-import { FaTachometerAlt, FaUser, FaBullhorn, FaDoorOpen, FaPlusSquare, FaFile } from 'react-icons/fa'
+import { FaTachometerAlt, FaUser, FaBullhorn, FaDoorOpen, FaPlusSquare, FaFile, FaHome, FaUserPlus } from 'react-icons/fa'
 import schoolLogo from '../assets/Images/Royal Ambassadors Schools Logo.png'
 import { supabase } from '../supabaseClient'
 import { useNavigate } from 'react-router-dom'
@@ -60,9 +60,9 @@ export const TeachNavbar = () => {
           </div>
     
           <div className='flex flex-col gap-4 w-full'>
-            <NavLink to="/teacher/dashboard" className={linkClasses}>
-              <FaTachometerAlt className='text-2xl min-w-7.5px' />
-              <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Dashboard</span>
+            <NavLink to="/" className={linkClasses}>
+              <FaHome className='text-2xl min-w-7.5px' />
+              <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Home</span>
             </NavLink>
     
             <NavLink to="/teacher/profile" className={linkClasses}>
@@ -87,6 +87,13 @@ export const TeachNavbar = () => {
               <NavLink to="/teacher/insertclub" className={linkClasses}>
                 <FaFile className='text-2xl min-w-7.5px' />
                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Insert Club</span>
+              </NavLink>
+            )}
+
+             {status === 'approved' && (
+              <NavLink to="/teacher/studentsignup" className={linkClasses}>
+                <FaUserPlus className='text-2xl min-w-7.5px' />
+                <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Student SignUp</span>
               </NavLink>
             )}
     

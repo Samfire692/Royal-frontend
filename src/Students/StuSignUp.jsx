@@ -55,8 +55,18 @@ export const StuSignUp = () => {
          Swal.fire({
            icon:"success",
            title:"Success",
-           text:"Code generated Successfully"
-         })
+           text:`Student Special Id generated Successfully ${specialId}`,
+           allowOutsideClick:false,
+           allowEscapeKey:false,
+           showConfirmButton:true,
+           showCancelButton:false,
+           confirmButtonText:"Save Profile"
+         }).then((result) => {
+    if (result.isConfirmed) {
+      // THIS IS WHERE YOU TRIGGER THE "LOCK-DOWN" MODAL
+      triggerProfileModal(authData.user.id);
+    }
+  });
          
          setFullname("");
          setLoading(false);
@@ -65,7 +75,7 @@ export const StuSignUp = () => {
      }
 
   return (
-     <div className='py-2 lg:w-[59vw]'>
+     <div className='py-2 w-xs lg:w-220'>
               <div className='mb-3 px-3'>
                 <h2 className='font-bold text-2xl text-blue-600 text-center mb-2'>Student Signup</h2>
               </div>

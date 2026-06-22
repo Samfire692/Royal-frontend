@@ -17,7 +17,7 @@ export const News = () => {
         const maxSize = 2 * 1024 * 1024 
       
       if (file.size > maxSize) {
-        alert("Omo, this file is too big! Please select an image under 2MB.")
+        alert("this file is too big! Please select an image under 2MB.")
         e.target.value = "" // Clear the input
         setPreviewUrl(null)
         setImageFile(null)

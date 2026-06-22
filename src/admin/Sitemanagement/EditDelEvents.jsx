@@ -136,8 +136,8 @@ export const EditDelEvents = () => {
   }, [])
 
   return (
-    <div>
-      <div className='bg-white border-slate-100 border shadow-xl lg:h-[72vh] min-h-[50vh] overflow-y-scroll p-4 rounded-4xl mx-auto lg:w-[28vw] md:w-[45vw]'>
+    <div className='px-2'>
+      <div className='bg-white border-slate-100 border shadow-xl lg:h-[72vh] min-h-[50vh] overflow-y-scroll p-4 rounded-4xl mx-auto'>
         <div className='mb-4 flex items-center justify-between'>
           <h2 className='font-black text-blue-950 uppercase tracking-tight'>Active Events</h2>
           <span className='bg-blue-600 text-white text-[10px] px-2 py-1 rounded-full font-bold'>{events.length}</span>

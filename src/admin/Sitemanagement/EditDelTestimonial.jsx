@@ -148,11 +148,11 @@ useEffect(() => {
         <div key={item.id} className='p-1 mt-2'>
             <div className='bg-white shadow-sm p-3 flex md:justify-between gap-2 rounded-xl cursor-pointer' onClick={() => handleView(item)}>
                 <img src={item.image_url} alt="" className='w-24 h-24 rounded-xl my-auto'/>
-                <div className='pt-2 mx-auto text-center'>
-                    <p className='font-bold text-xl'>{item.name}</p>
-                    <p className='w-52 py-1 h-8 overflow-hidden'>{item.content}</p>
-                    <p className='flex gap-2'><span>{item.club}</span> 
-                    <span>
+                <div className='pt-2 mx-auto '>
+                    <p className='font-bold text-blue-500'>{item.name}</p>
+                    <p className='w-43 py-1 h-8 overflow-hidden'>{item.content}</p>
+                    <p className='flex gap-2'> 
+                    <span className=''>
                      {new Date(item.created_at).toLocaleDateString('en-US', {
                      day: 'numeric',
                      month: 'short',

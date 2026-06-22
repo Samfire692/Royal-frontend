@@ -14,6 +14,8 @@ export const ReportCard = () => {
     const [loading, setLoading] = useState(true);
     const [clubInfo, setClubinfo] = useState ({});
     const [teacherComments, setTeachercomments] = useState({});
+    const [admindata , setAdmindata] = useState(null);
+  
 
     const fetchData = async()=> {
        try{
@@ -37,6 +39,15 @@ export const ReportCard = () => {
          setTeacherdata(teacherData);
         //  console.log("currently" , user?.id)
 
+        const {data:adminData , error:adminError} = await supabase
+        .from("adminsignup")
+        .select("signature_url")
+        .maybeSingle();
+
+        if(adminError) throw adminError;
+        setAdmindata(adminData);
+        console.log("admin", adminData)
+
          const {data, error} = await supabase
          .from("studentsignup")
          .select("*")
@@ -45,7 +56,7 @@ export const ReportCard = () => {
 
          if(error) throw error
         if(data?.class_id){
-             const {data:classData , error:classError} = await supabase
+          const {data:classData , error:classError} = await supabase
          .from("royalclassrooms")
          .select("*")
          .eq("id", data.class_id)
@@ -99,8 +110,7 @@ export const ReportCard = () => {
         .maybeSingle()
 
         if(commentError) throw commentError;
-        setTeachercomments(commentData)
-
+        setTeachercomments(commentData);
        }catch(error){
          Swal.fire({
             icon:"error",
@@ -117,6 +127,7 @@ export const ReportCard = () => {
     const Results = studentSubjectresults.filter(result => result.term === sessionTerm).map((results)=> {
                          const test = results?.test_score || 0;
                          const exam = results?.exam_score || 0;
+                         const signature = results?.signature_url || "null";
 
                          const cummScore = Number(test) + Number(exam);
                          
@@ -129,7 +140,7 @@ export const ReportCard = () => {
                          }else if(sessionTerm === "Second Term"){
                             const firstTerm = studentSubjectresults.find(item => item.subject_id === results.subject_id && item.term === "First Term")
 
-                            console.log("first score ", firstTerm) 
+                            // console.log("first score ", firstTerm) 
 
                             const firstTermScore = Number(firstTerm?.test_score || 0) + Number(firstTerm?.exam_score || 0);
 
@@ -146,13 +157,13 @@ export const ReportCard = () => {
                             
                             const secondTermScore = Number(secondTerm?.test_score || 0) + Number(secondTerm?.exam_score || 0);
                             
-                            console.log("second score", secondTerm);
+                            // console.log("second score", secondTerm);
                             const addition = firstTermScore + secondTermScore + cummScore
                             weightAverage = addition / 3 || 0;
 
                             firstterm = firstTermScore || 0;
                             secondterm = secondTermScore || 0;
-                            console.log("second Term", secondTermScore)
+                            // console.log("second Term", secondTermScore)
                          }
 
                          const finalWeightAverage = Math.round(weightAverage);
@@ -199,7 +210,8 @@ export const ReportCard = () => {
                               cummScore,
                               weightAverage: finalWeightAverage,
                               grade,
-                              TeacherComment
+                              TeacherComment,
+                              signature
                               };
                              });
 
@@ -284,7 +296,6 @@ export const ReportCard = () => {
                         <th className='border'>Weight Average</th>
                         <th className='border'>Grade</th>
                         <th className='border'>Teacher's Comment</th>
-                        <th className='border'>Sign</th>
                     </tr>
                 </thead>
 
@@ -300,7 +311,6 @@ export const ReportCard = () => {
                              <td className='border text-center'>{res.weightAverage}</td>
                              <td className='border text-center'>{res.grade}</td>
                              <td className='border text-center'>{res.TeacherComment}</td>
-                             <td className='border text-center'>Null ...</td>
                         </tr>
                      ))}
                 </tbody>
@@ -360,7 +370,8 @@ export const ReportCard = () => {
 
                     <div>
                        <small>Signature & Date :</small>
-                       <span className='ps-1 border-b'>{teacherComments?.created_at ? new Date(teacherComments.created_at).toLocaleDateString('en-GB') : "-"} Null . . .
+                       <span className='ps-1 border-b'>{teacherComments?.created_at ? new Date(teacherComments.created_at).toLocaleDateString('en-GB') : "-"}
+                        <span><img src={admindata.signature_url} alt="" className='w-25' /></span>
                        </span>
                     </div>
                 </div>

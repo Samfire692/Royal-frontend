@@ -154,7 +154,7 @@ export const Events = () => {
       </div>
 
       {activeView && (
-        <div className='grow min-w-100'>
+        <div className=''>
           <EditDelEvents activeTab={activeTab}/>
         </div>
       )}

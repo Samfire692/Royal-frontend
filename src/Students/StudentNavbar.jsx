@@ -39,9 +39,9 @@ export const StudentNavbar = () => {
        
              <div className='flex flex-col gap-4 w-full'>
 
-               <NavLink to="/student/dashboard" className={linkClasses}>
-                 <FaTachometerAlt className='text-2xl min-w-7.5px' />
-                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Dashboard</span>
+               <NavLink to="/" className={linkClasses}>
+                 <FaHome className='text-2xl min-w-7.5px' />
+                 <span className='font-bold whitespace-nowrap block lg:hidden lg:group-hover:block'>Home</span>
                </NavLink>
        
                <NavLink to="/student/profile" className={linkClasses}>

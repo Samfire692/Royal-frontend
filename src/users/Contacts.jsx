@@ -22,17 +22,7 @@ export const Contacts = () => {
       // Fetching everything we discussed from site_settings
       const { data, error } = await supabase
         .from('site_settings')
-        .select(`
-          whatsapp_no, 
-          email, 
-          phone, 
-          address, 
-          facebook_url, 
-          instagram_url, 
-          twitter_url, 
-          map_embed_url,
-          site_name
-        `)
+        .select("*")
         .single();
 
       if (error) {
@@ -119,7 +109,7 @@ export const Contacts = () => {
               {settings?.twitter_url && (
                 <a href={settings.twitter_url} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-sky-500 hover:bg-sky-500 hover:text-white transition-all"><FaTwitter /></a>
               )}
-              <a href={`https://wa.me/${settings?.whatsapp_no?.replace(/\D/g, '')}`} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"><FaWhatsapp /></a>
+              <a href={`https://wa.me/${settings?.contact_whatsapp?.replace(/\D/g, '')}`} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"><FaWhatsapp /></a>
             </div>
           </div>
 
@@ -134,7 +124,7 @@ export const Contacts = () => {
                 <input type="email" placeholder="Email Address" className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none font-medium focus:ring-2 focus:ring-blue-600" />
               </div>
               <textarea rows="6" placeholder="How can we help you?" className="md:col-span-2 w-full bg-slate-50 border-none rounded-3xl px-6 py-4 outline-none font-medium resize-none focus:ring-2 focus:ring-blue-600"></textarea>
-             <a href={`https://wa.me/${settings?.whatsapp_no?.replace(/\D/g, '')}`} target="_blank" 
+             <a href={`https://wa.me/${settings?.contact_whatsapp?.replace(/\D/g, '')}`} target="_blank" 
              rel="noreferrer"
              className="bg-emerald-600 text-white font-black uppercase text-[10px] tracking-[0.3em] px-12 py-5 rounded-2xl shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 w-full md:w-auto"
 >

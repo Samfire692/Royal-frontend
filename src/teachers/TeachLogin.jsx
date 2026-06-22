@@ -73,7 +73,7 @@ export const TeachLogin = () => {
           })
           
           setTimeout(()=> {
-            navigate("/teacher/dashboard");
+            navigate("/teacher/insertResult");
           },3000)
           setLoading(false);
         }

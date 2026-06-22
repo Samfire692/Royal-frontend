@@ -128,18 +128,19 @@ export const EditDelNews = () => {
     }, [])
 
   return (
-     <div className='bg-slate-200 border-slate-200 border lg:h-[72vh] min-h-[50vh] overflow-y-scroll p-2 rounded-xl mx-auto lg:w-[28vw] md:w-[45vw] '>
+     <div className='bg-slate-200 border-slate-200 border lg:h-[72vh] min-h-[50vh] overflow-y-scroll p-2 rounded-xl mx-auto'>
         <div className='mb-2'>
             <h2 className='font-bold text-xl'>Existing News</h2>
         </div><hr />
        {news.map((item)=> (
         <div key={item.id} className='p-1 mt-2'>
             <div className='bg-white shadow-sm p-3 flex md:justify-between gap-2 rounded-xl cursor-pointer' onClick={() => handleView(item)}>
-                <img src={item.image_url} alt="" className='w-24 h-24 rounded-xl my-auto'/>
+                <img src={item.image_url} alt="" className='w-20 h-20 rounded-xl my-auto'/>
                 <div className='pt-2'>
-                    <p className='font-bold text-xl'>{item.title}</p>
-                    <p className='w-52 py-1 h-8 overflow-hidden'>{item.content}</p>
-                    <p className='flex gap-2'><span>{item.club}</span> 
+                    <p className='overflow-hidden font-bold'>{item.title}</p>
+                    <p className='w-45 py-1 h-8 overflow-hidden small'>{item.content}</p>
+                    <p className='flex justify-between'>
+                    <span>{item.club}</span> 
                     <span>
                      {new Date(item.created_at).toLocaleDateString('en-US', {
                      day: 'numeric',

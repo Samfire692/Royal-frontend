@@ -30,7 +30,7 @@ export const StudentRouter = () => {
             {navbar && (
               <div className='flex'>
                 <StudentNavbar />
-                <button className='text-white border-0 rounded-xl w-9 h-9 p-1.5 absolute text-2xl right-22 md:left-90 top-2 bg-red-500' onClick={() => setNavbar(false)}><FaTimes /></button>
+                <button className='text-white border-0 rounded-xl w-9 h-9 p-1.5 absolute text-2xl z-50 right-[18vw] md:left-[41vw] top-2 bg-red-500' onClick={() => setNavbar(false)}><FaTimes /></button>
               </div>
             )}
           </div>
@@ -60,7 +60,6 @@ export const StudentRouter = () => {
 
             </div>
             }>
-             <Route path='dashboard' element={<StudentDashboard/>}/>
              <Route path='profile' element={<StudentProfile/>}/>
              <Route path = 'checkresult' element={<Result/>}/>
             </Route>

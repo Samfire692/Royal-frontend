@@ -65,9 +65,9 @@ export const StuLogin = () => {
     });
 
     setTimeout(() => {
-      navigate("/student/dashboard");
+      navigate("/student/checkresult");
       setLoading(false); // Stop loading after navigation
-    }, 2000);
+    }, 1000);
   }
 };
 
