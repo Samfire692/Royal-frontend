@@ -42,11 +42,12 @@ export const ReportCard = () => {
         const {data:adminData , error:adminError} = await supabase
         .from("adminsignup")
         .select("signature_url")
+        .limit(1)
         .maybeSingle();
 
         if(adminError) throw adminError;
         setAdmindata(adminData);
-        console.log("admin", adminData)
+        // console.log("admin", adminData)
 
          const {data, error} = await supabase
          .from("studentsignup")
@@ -60,7 +61,6 @@ export const ReportCard = () => {
          .from("royalclassrooms")
          .select("*")
          .eq("id", data.class_id)
-         .maybeSingle();
 
          if(!classError && classData){
             data.royalclassrooms = classData
@@ -74,6 +74,7 @@ export const ReportCard = () => {
          .eq("student_id", studentID)
         //  .eq("term", SessionTerm)
          .eq("session", SessionYear)
+         
 
          if(subjectresultError) throw subjectresultError;
          setStudentsubjectResults(subjectresultData || []);
@@ -95,8 +96,6 @@ export const ReportCard = () => {
         .eq("student_id", studentID)
         .eq("session", SessionYear)
         .eq("term", SessionTerm)
-        .maybeSingle()
-
 
         if(clubError) throw clubError;
         setClubinfo(clubData);
@@ -107,7 +106,6 @@ export const ReportCard = () => {
         .eq("student_id", studentID)
         .eq("session", SessionYear)
         .eq("term", SessionTerm)
-        .maybeSingle()
 
         if(commentError) throw commentError;
         setTeachercomments(commentData);
@@ -329,7 +327,13 @@ export const ReportCard = () => {
                     </tr>
                 </tbody>
 
-                 <small className='p-1.5 uppercase font-bold flex justify-center w-full'>Sports Activities</small>
+                 <tbody>
+                  <tr>
+                    <td colSpan={8} className="text-center">
+                      <small className='p-1.5 uppercase font-bold'>Sports Activities</small>
+                    </td>
+                  </tr>
+                </tbody>
 
                 <thead>
                     <tr>
@@ -340,9 +344,11 @@ export const ReportCard = () => {
                 </thead>
 
                 <tbody>
-                    <td className='border text-center'>{studentInfo?.club_name}</td>
-                    <td className='border text-center'>Member</td>
-                    <td className='border px-2' colSpan={8}>{clubInfo?.comment}</td>
+                   <tr>
+                       <td className='border text-center'>{studentInfo?.club_name}</td>
+                       <td className='border text-center'>Member</td>
+                       <td className='border px-2' colSpan={8}>{clubInfo?.comment}</td>
+                   </tr>
                 </tbody>
             </table>
 

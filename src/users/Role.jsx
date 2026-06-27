@@ -25,10 +25,10 @@ export const Role = () => {
          </div>
         <br />
 
-        <div className='cards flex flex-col lg:flex-row gap-3 justify-evenly px-3'>
+        <div className='cards flex flex-col md:flex-row flex-wrap gap-3 justify-evenly px-3'>
             {/* Admin */}
            <Link to={"/admin/"} className='hover:rotate-3 hover:transition-all focus:rotate-3 focus:transition-all'>
-             <div className='border-4 border-slate-100 p-4 rounded-4xl flex gap-2 lg:w-md'>
+             <div className='border-4 border-slate-100 p-4 rounded-4xl flex gap-2 md:w-md h-37'>
              <FaUser className='text-7xl mx-auto w-28 p-3 text-blue-800 bg-blue-400/30 my-auto rounded-xl'/>
               <div>
                 <h3 className='text-2xl font-bold mt-2 text-blue-900'>Admin</h3>
@@ -38,7 +38,7 @@ export const Role = () => {
            </Link>
 
            <Link className='hover:rotate-3 hover:transition-all focus:rotate-3 focus:transition-all' to={'/teacherlogin'}>
-             <div className='border-4 border-slate-100 p-4 flex gap-2 rounded-4xl lg:w-md'>
+             <div className='border-4 border-slate-100 p-4 flex gap-2 rounded-4xl md:w-md'>
              <FaChalkboardTeacher className='text-7xl mx-auto w-39 p-3 text-blue-800 bg-blue-400/30 my-auto rounded-xl'/>
              <div>
               <h3 className='text-2xl font-bold mt-2 text-blue-900'>Teacher</h3>
@@ -48,7 +48,7 @@ export const Role = () => {
            </Link>
 
            <Link className='hover:rotate-3 hover:transition-all focus:rotate-3 focus:transition-all' to={'/student/'}>
-             <div className='border-4 border-slate-100 p-4 rounded-4xl flex gap-2 lg:w-md'>
+             <div className='border-4 border-slate-100 p-4 rounded-4xl flex gap-2 md:w-md'>
              <FaUserGraduate className='text-7xl mx-auto w-39 p-3 text-blue-800 bg-blue-400/30 my-auto rounded-xl'/>
             <div>
                <h3 className='text-2xl font-bold mt-2 text-blue-900'>Student</h3>

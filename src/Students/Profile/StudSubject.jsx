@@ -131,6 +131,7 @@ export const StudSubject = () => {
                         current_class: selectedClasses.id // This is the fix!
                     })
                     .eq("id", user.id);
+                    
 
                 if (profileError) throw profileError;
 

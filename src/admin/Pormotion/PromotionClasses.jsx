@@ -164,11 +164,18 @@ export const PromotionClasses = () => {
 
             // Update the students' class_id in the database
             const { error } = await supabase
-                .from("studentsignup")
+                .from("studentchooseSubject")
                 .update({ class_id: targetClassId })
-                .in("id", studentsToPromote);
+                .in("student_id", studentsToPromote);
 
             if (error) throw error;
+
+            const {error:studentError} = await supabase
+            .from("studentsignup")
+            .update({class_id: targetClassId})
+            .in("id", studentsToPromote);
+
+            if(studentError) throw studentError;
 
             Swal.fire("Success!", `${studentsToPromote.length} students have been successfully promoted!`, "success");
             
