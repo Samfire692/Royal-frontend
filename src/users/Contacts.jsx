@@ -16,6 +16,9 @@ import { Footer } from './Footer';
 export const Contacts = () => {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fullName, setFullname] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -35,6 +38,21 @@ export const Contacts = () => {
 
     fetchSettings();
   }, []);
+
+  const submit = async(e)=> {
+    e.preventDefault();
+    
+    const phonenumber = settings.contact_whatsapp;
+    const Fullname = `${fullName}`;
+    const Email = `${email}`;
+    const Message = `${message}`;
+
+    const encode = encodeURIComponent(`${Fullname}\nMessage: ${Message}`);
+    const whatsAppurl = `https://wa.me/${phonenumber}?text=hello my name is ${encode}`;
+
+     window.open(whatsAppurl, "_blank");
+    // console.log("whatsapp no", phonenumber)
+  }
 
   if (loading) return (
     <div className="h-screen flex items-center justify-center bg-slate-50">
@@ -65,71 +83,26 @@ export const Contacts = () => {
 
         <div className="grid lg:grid-cols-3 gap-12">
           
-          {/* COLUMN 1: DIRECT INFO */}
-          <div className="space-y-6">
-            <h3 className="text-sm font-black text-blue-950 uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
-               Quick Info <div className="h-px grow bg-slate-200"></div>
-            </h3>
-
-            {/* Phone */}
-            <div className="bg-white p-6 rounded-4xl shadow-xl shadow-blue-900/5 flex items-center gap-5 border border-white">
-              <div className="bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg"><FaPhoneAlt /></div>
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Us</p>
-                <p className="text-blue-950 font-bold text-sm">{settings?.phone}</p>
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="bg-white p-6 rounded-4xl shadow-xl shadow-blue-900/5 flex items-center gap-5 border border-white">
-              <div className="bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg"><FaEnvelope /></div>
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Mail Us</p>
-                <p className="text-blue-950 font-bold text-sm">{settings?.email}</p>
-              </div>
-            </div>
-
-            {/* Address */}
-            <div className="bg-white p-6 rounded-4xl shadow-xl shadow-blue-900/5 flex items-center gap-5 border border-white">
-              <div className="bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg"><FaMapMarkerAlt /></div>
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Our Campus</p>
-                <p className="text-blue-950 font-bold text-sm">{settings?.address}</p>
-              </div>
-            </div>
-
-            {/* SOCIALS */}
-            <div className="pt-6 flex gap-4 justify-center lg:justify-start">
-              {settings?.facebook_url && (
-                <a href={settings.facebook_url} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all"><FaFacebookF /></a>
-              )}
-              {settings?.instagram_url && (
-                <a href={settings.instagram_url} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-pink-600 hover:bg-pink-600 hover:text-white transition-all"><FaInstagram /></a>
-              )}
-              {settings?.twitter_url && (
-                <a href={settings.twitter_url} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-sky-500 hover:bg-sky-500 hover:text-white transition-all"><FaTwitter /></a>
-              )}
-              <a href={`https://wa.me/${settings?.contact_whatsapp?.replace(/\D/g, '')}`} target="_blank" className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"><FaWhatsapp /></a>
-            </div>
-          </div>
+          33, Olasheu off Amikanle Road via AIT Road, Alagbado, Lagos. 
 
           {/* COLUMN 2 & 3: MESSAGE FORM */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-2 md:p-16 shadow-2xl shadow-blue-900/5 border border-white">
             <h3 className="text-3xl font-black text-blue-950 uppercase mb-8 tracking-tight">Send a <span className="text-blue-600">Message</span></h3>
             <form className="grid md:grid-cols-2 gap-8">
               <div className="space-y-1">
-                <input type="text" placeholder="Full Name" className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none font-medium focus:ring-2 focus:ring-blue-600" />
+                <input type="text" placeholder="Full Name" className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none font-medium focus:ring-2 focus:ring-blue-600"  onChange={(e)=> setFullname(e.target.value)}/>
               </div>
               <div className="space-y-1">
-                <input type="email" placeholder="Email Address" className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none font-medium focus:ring-2 focus:ring-blue-600" />
+                <input type="email" placeholder="Email Address" className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none font-medium focus:ring-2 focus:ring-blue-600" onChange={(e)=> setEmail(e.target.value)}/>
               </div>
-              <textarea rows="6" placeholder="How can we help you?" className="md:col-span-2 w-full bg-slate-50 border-none rounded-3xl px-6 py-4 outline-none font-medium resize-none focus:ring-2 focus:ring-blue-600"></textarea>
-             <a href={`https://wa.me/${settings?.contact_whatsapp?.replace(/\D/g, '')}`} target="_blank" 
-             rel="noreferrer"
-             className="bg-emerald-600 text-white font-black uppercase text-[10px] tracking-[0.3em] px-12 py-5 rounded-2xl shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 w-full md:w-auto"
->
-  Chat on WhatsApp <FaWhatsapp className="text-lg" />
-</a>
+              <textarea rows="6" placeholder="How can we help you?" className="md:col-span-2 w-full bg-slate-50 border-none rounded-3xl px-6 py-4 outline-none font-medium resize-none focus:ring-2 focus:ring-blue-600" onChange={(e)=> setMessage(e.target.value)}></textarea>
+             
+            <div className='flex justify-center w-full'>
+                <button className='bg-green-400 flex justify-center p-2.5 text-white gap-2 rounded-xl lg:w-sm' onClick={submit} type='button' disabled={!fullName ||!message}>
+              <FaWhatsapp className='text-2xl'/>
+              <span>Chat on Whatsapp</span>
+             </button>
+            </div>
             </form>
           </div>
 

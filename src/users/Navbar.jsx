@@ -21,7 +21,7 @@ export const Navbar = () => {
       </div>
 
       {/* desktop */}
-      <div className='hidden lg:flex flex-col lg:flex-row gap-5 lg:mx-auto lg:my-auto text-lg'>
+      <div className='hidden lg:flex flex-col lg:flex-row gap-5 lg:mx-auto lg:my-auto'>
         <Link to="/" className={`${isActive('/') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Home</Link>
         <Link to="/about" className={`${isActive('/about') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>About</Link>
         <Link to="/admission" className={`${isActive('/admission') ? 'text-blue-900 font-bold border-b-2 border-blue-900' : 'text-blue-500'}`}>Admission</Link>

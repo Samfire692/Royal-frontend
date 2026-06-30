@@ -26,7 +26,7 @@ export const News = () => {
   }, [])
 
   return (
-    <div className='max-w-350 mx-auto pt-8 min-h-screen bg-slate-50/50'>
+    <div className=' mx-auto pt-8 min-h-screen bg-slate-50/50'>
       {/* HEADER SECTION */}
       <div className='mb-16 text-center'>
         <div className='inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded-full mb-6'>

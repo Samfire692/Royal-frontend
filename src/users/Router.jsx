@@ -14,6 +14,7 @@ import { StuSignUp } from '../Students/StuSignUp'
 import { AdmissionForm } from './AdmissionForm'
 import { StuLogin } from '../Students/StuLogin'
 import { StudentDashboard } from '../Students/StudentDashboard'
+import { NotFound } from './NotFound'
 
 export const Router = () => {
   return (

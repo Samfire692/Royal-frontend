@@ -15,7 +15,7 @@ export const Footer = () => {
 
        if(error) throw error;
        setSetting(data[0]);
-       console.log("my data" , data);
+      //  console.log("my data" , data);
      }catch(error){
        console.log("Error" , error);
      }finally{

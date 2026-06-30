@@ -106,7 +106,7 @@ export const EditDelEvents = () => {
           if (error) {
             Swal.fire('Error', error.message, 'error');
           } else {
-            Swal.fire('Updated!', 'Event details changed sharp-sharp!', 'success').then(() => fetchEvents());
+            Swal.fire('Updated!', 'Event details updated', 'success').then(() => fetchEvents());
           }
         });
 
